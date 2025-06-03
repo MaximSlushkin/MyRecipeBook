@@ -2,7 +2,7 @@
 <resources>
 
     <style name="StyleTitle14" parent="TextAppearance.AppCompat">
-        <item name="android:textSize">13sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:fontFamily">@font/montserrat_alternates_semibold</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@android:color/white</item>

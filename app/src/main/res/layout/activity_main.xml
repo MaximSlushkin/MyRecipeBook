@@ -29,7 +29,7 @@
             android:layout_marginEnd="@dimen/half_padding"
             android:layout_weight="1"
             android:backgroundTint="@color/button_active_color"
-            android:text="@string/recipes_button"
+            android:text="@string/title_categories"
             tools:ignore="VisualLintButtonSize" />
 
         <com.google.android.material.button.MaterialButton
@@ -40,9 +40,9 @@
             android:layout_marginStart="@dimen/half_padding"
             android:layout_weight="1"
             android:backgroundTint="@color/button_inactive_color"
-            android:text="@string/favorites_button"
+            android:text="@string/title_favorites"
             app:icon="@drawable/ic_heart_empty"
-            app:iconGravity="end"
+            app:iconGravity="textEnd"
             tools:ignore="TextContrastCheck,VisualLintButtonSize" />
     </LinearLayout>
 

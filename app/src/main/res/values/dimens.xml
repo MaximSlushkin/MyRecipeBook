@@ -2,7 +2,7 @@
 <resources>
 
     <dimen name="main_padding">16dp</dimen>
-    <dimen name="half_padding">4dp</dimen>
+    <dimen name="half_padding">2dp</dimen>
     <dimen name="button_corner_radius">8dp</dimen>
 
 </resources>
