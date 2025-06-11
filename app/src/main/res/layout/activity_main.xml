@@ -5,15 +5,45 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_color"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/main_padding"
+        android:paddingEnd="@dimen/main_padding"
+        android:paddingBottom="@dimen/main_padding"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        tools:ignore="ExtraText">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRecipes"
+            style="@style/StyleNavButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/half_padding"
+            android:layout_weight="1"
+            android:backgroundTint="@color/button_active_color"
+            android:text="@string/title_categories"
+            tools:ignore="VisualLintButtonSize" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFavorites"
+            style="@style/StyleNavButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/half_padding"
+            android:layout_weight="1"
+            android:backgroundTint="@color/button_inactive_color"
+            android:text="@string/title_favorites"
+            app:icon="@drawable/ic_heart_empty"
+            app:iconGravity="textEnd"
+            tools:ignore="TextContrastCheck,VisualLintButtonSize" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
