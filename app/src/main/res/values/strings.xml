@@ -2,4 +2,5 @@
     <string name="app_name">MyRecipeBook</string>
     <string name="title_categories">Категории</string>
     <string name="title_favorites">Избранное</string>
+    <string name="categories_fragment_title">Categories List Fragment</string>
 </resources>
