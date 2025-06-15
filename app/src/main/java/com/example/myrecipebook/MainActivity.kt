@@ -7,20 +7,24 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 import com.example.myrecipebook.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var _binding: ActivityMainBinding
+
+    private var _binding: ActivityMainBinding? = null
+    private val binding: ActivityMainBinding
+        get() = _binding
+            ?: throw IllegalStateException("Binding for ActivityMainBinding must not be null")
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         enableEdgeToEdge()
 
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(_binding.root)
+        setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(_binding.root) { view, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.updatePadding(
                 top = systemBarsInsets.top,
@@ -28,11 +32,35 @@ class MainActivity : AppCompatActivity() {
             )
             insets
         }
+        if (savedInstanceState == null) {
+            navigateToCategories()
+        }
 
+        binding.btnRecipes.setOnClickListener {
+            navigateToCategories()
+        }
+
+        binding.btnFavorites.setOnClickListener {
+            navigateToFavorites()
+        }
+    }
+
+    private fun navigateToCategories() {
         supportFragmentManager.commit {
             setReorderingAllowed(true)
-            add(R.id.mainContainer, CategoriesListFragment())
-            addToBackStack(null)
+            replace<CategoriesListFragment>(R.id.mainContainer)
         }
+    }
+
+    private fun navigateToFavorites() {
+        supportFragmentManager.commit {
+            setReorderingAllowed(true)
+            replace<FavoritesFragment>(R.id.mainContainer)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

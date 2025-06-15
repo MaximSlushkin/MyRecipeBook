@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -15,7 +16,7 @@
         app:layout_constraintBottom_toTopOf="@id/navigationButtonsContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/navigationButtonsContainer"
@@ -40,7 +41,8 @@
             android:layout_weight="1"
             android:backgroundTint="@color/button_active_color"
             android:text="@string/title_categories"
-            tools:ignore="VisualLintButtonSize"/>
+            android:textColor="@color/white"
+            tools:ignore="VisualLintButtonSize" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnFavorites"
@@ -51,9 +53,11 @@
             android:layout_weight="1"
             android:backgroundTint="@color/button_inactive_color"
             android:text="@string/title_favorites"
+            android:textColor="@color/white"
             app:icon="@drawable/ic_heart_empty"
+            app:iconTint="@color/white"
             app:iconGravity="textEnd"
-            tools:ignore="TextContrastCheck,VisualLintButtonSize"/>
+            tools:ignore="TextContrastCheck,VisualLintButtonSize" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
