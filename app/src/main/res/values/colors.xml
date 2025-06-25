@@ -6,4 +6,6 @@
     <color name="button_active_color">#525DC0</color>
     <color name="button_inactive_color">#E13E3E</color>
     <color name="status_bar_color">#F4FAFF</color>
+    <color name="header_text_background">#80000000</color>
+    <color name="text_header_categories">#5F3678</color>
 </resources>
