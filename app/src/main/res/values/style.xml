@@ -11,21 +11,16 @@
     <style name="StyleNavButton" parent="Widget.Material3.Button">
         <item name="android:textAppearance">@style/StyleTitle14</item>
         <item name="cornerRadius">@dimen/corner_radius</item>
-        <item name="android:insetTop">0dp</item>
-        <item name="android:insetBottom">0dp</item>
     </style>
-    <!-- Общий стиль для заголовков -->
+
     <style name="TextAppearance.CategoriesHeader" parent="TextAppearance.MaterialComponents.Headline6">
         <item name="android:textSize">20sp</item>
         <item name="android:fontFamily">@font/montserrat_alternates_semibold</item>
         <item name="android:textColor">@color/text_header_categories</item>
         <item name="android:textAllCaps">true</item>
-
         <item name="fontFamily">@font/montserrat_alternates_semibold</item>
-        <item name="android:fontFeatureSettings">'lnum', 'tnum'</item>
         <item name="android:textStyle">normal</item>
     </style>
-
 
 
 </resources>
