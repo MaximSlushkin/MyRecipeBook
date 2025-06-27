@@ -8,4 +8,5 @@
     <color name="status_bar_color">#F4FAFF</color>
     <color name="header_text_background">#80000000</color>
     <color name="text_header_categories">#5F3678</color>
+    <color name="text_categories_description">#666666</color>
 </resources>
