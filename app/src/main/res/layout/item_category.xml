@@ -4,16 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="@dimen/recycler_view_horizontal_margin"
+    android:layout_marginHorizontal="@dimen/default_rounded_margins"
     android:layout_marginBottom="@dimen/main_padding"
-    android:foreground="?attr/selectableItemBackground"
-    app:cardCornerRadius="@dimen/corner_radius"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?selectableItemBackground"
+    android:background="@android:color/white"
+    app:cardCornerRadius="@dimen/default_rounded_margins"
     app:cardElevation="@dimen/category_elevation">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="@dimen/default_rounded_margins">
 
         <ImageView
             android:id="@+id/ivCategoryImage"
@@ -23,26 +27,20 @@
             android:scaleType="centerCrop"
             tools:src="@drawable/burger" />
 
-        <LinearLayout
+
+        <TextView
+            android:id="@+id/tvCategoryTitle"
+            style="@style/TextAppearance.CategoriesCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/main_padding">
+            android:text="@string/burger_categories" />
 
-            <TextView
-                android:id="@+id/tvCategoryTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/burger_categories"
-                style="@style/TextAppearance.CategoriesCard"/>
-
-            <TextView
-                android:id="@+id/tvCategoryDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/burger_description"
-                style="@style/TextAppearance.CategoryDescription"
-                android:layout_marginTop="@dimen/category_elevation"/>
-        </LinearLayout>
+        <TextView
+            android:id="@+id/tvCategoryDescription"
+            style="@style/TextAppearance.CategoryDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/category_elevation"
+            android:text="@string/burger_description" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
