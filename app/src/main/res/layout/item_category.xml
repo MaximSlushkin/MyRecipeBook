@@ -5,11 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="@dimen/default_rounded_margins"
-    android:layout_marginBottom="@dimen/main_padding"
+    android:layout_marginBottom="@dimen/header_margin"
+    android:background="color/white"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?selectableItemBackground"
-    android:background="@android:color/white"
     app:cardCornerRadius="@dimen/default_rounded_margins"
     app:cardElevation="@dimen/category_elevation">
 
@@ -27,12 +27,12 @@
             android:scaleType="centerCrop"
             tools:src="@drawable/burger" />
 
-
         <TextView
             android:id="@+id/tvCategoryTitle"
             style="@style/TextAppearance.CategoriesCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_rounded_margins"
             android:text="@string/burger_categories" />
 
         <TextView
@@ -40,7 +40,7 @@
             style="@style/TextAppearance.CategoryDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/category_elevation"
+            android:layout_marginVertical="@dimen/default_rounded_margins"
             android:text="@string/burger_description" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
