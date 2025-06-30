@@ -31,7 +31,7 @@
             android:layout_marginStart="@dimen/header_margin"
             android:layout_marginBottom="@dimen/header_margin"
             android:background="@drawable/rounded_background"
-            android:padding="@dimen/header_margin"
+            android:padding="@dimen/header_text_padding"
             android:text="@string/title_categories"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

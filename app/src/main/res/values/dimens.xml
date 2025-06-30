@@ -2,14 +2,10 @@
 <resources>
 
     <dimen name="half_padding_am">2dp</dimen>
-
     <dimen name="default_rounded_margins">8dp</dimen>
-
     <dimen name="header_height">224dp</dimen>
     <dimen name="header_text_padding">10dp</dimen>
     <dimen name="header_margin">16dp</dimen>
-
-
     <dimen name="category_image_height">130dp</dimen>
     <dimen name="category_elevation">4dp</dimen>
 
