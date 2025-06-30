@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -24,9 +23,9 @@
         android:layout_height="wrap_content"
         android:baselineAligned="false"
         android:orientation="horizontal"
-        android:paddingStart="@dimen/main_padding"
-        android:paddingEnd="@dimen/main_padding"
-        android:paddingBottom="@dimen/main_padding"
+        android:paddingStart="@dimen/header_margin"
+        android:paddingEnd="@dimen/header_margin"
+        android:paddingBottom="@dimen/header_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -37,7 +36,7 @@
             style="@style/StyleNavButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/half_padding"
+            android:layout_marginEnd="@dimen/half_padding_am"
             android:layout_weight="1"
             android:backgroundTint="@color/button_active_color"
             android:text="@string/title_categories"
@@ -49,14 +48,14 @@
             style="@style/StyleNavButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/half_padding"
+            android:layout_marginStart="@dimen/half_padding_am"
             android:layout_weight="1"
             android:backgroundTint="@color/button_inactive_color"
             android:text="@string/title_favorites"
             android:textColor="@color/white"
             app:icon="@drawable/ic_heart_empty"
-            app:iconTint="@color/white"
             app:iconGravity="textEnd"
+            app:iconTint="@color/white"
             tools:ignore="TextContrastCheck,VisualLintButtonSize" />
     </LinearLayout>
 

@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <dimen name="main_padding">16dp</dimen>
-    <dimen name="half_padding">2dp</dimen>
-    <dimen name="button_corner_radius">8dp</dimen>
+    <dimen name="half_padding_am">2dp</dimen>
+    <dimen name="default_rounded_margins">8dp</dimen>
+    <dimen name="header_height">224dp</dimen>
+    <dimen name="header_text_padding">10dp</dimen>
+    <dimen name="header_margin">16dp</dimen>
+    <dimen name="category_image_height">130dp</dimen>
+    <dimen name="category_elevation">4dp</dimen>
 
 </resources>

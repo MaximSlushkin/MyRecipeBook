@@ -2,4 +2,8 @@
     <string name="app_name">MyRecipeBook</string>
     <string name="title_categories">Категории</string>
     <string name="title_favorites">Избранное</string>
+    <string name="header_image_description">Изображение категорий рецептов</string>
+    <string name="burger_categories">Бургеры</string>
+    <string name="burger_categories_description">Изображение категории Бургеры</string>
+    <string name="burger_description">Рецепты всех популярных видов бургеров</string>
 </resources>

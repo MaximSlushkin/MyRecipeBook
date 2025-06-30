@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/default_rounded_margins"
+    android:layout_marginBottom="@dimen/header_margin"
+    android:background="@color/white"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?selectableItemBackground"
+    app:cardCornerRadius="@dimen/default_rounded_margins"
+    app:cardElevation="@dimen/category_elevation">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/default_rounded_margins">
+
+        <ImageView
+            android:id="@+id/ivCategoryImage"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/category_image_height"
+            android:contentDescription="@string/burger_categories_description"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/burger" />
+
+        <TextView
+            android:id="@+id/tvCategoryTitle"
+            style="@style/TextAppearance.CategoriesCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_rounded_margins"
+            android:text="@string/burger_categories" />
+
+        <TextView
+            android:id="@+id/tvCategoryDescription"
+            style="@style/TextAppearance.CategoryDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/default_rounded_margins"
+            android:text="@string/burger_description" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
