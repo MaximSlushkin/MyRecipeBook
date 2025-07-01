@@ -3,10 +3,7 @@ package com.example.myrecipebook
 import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myrecipebook.databinding.ItemCategoryBinding
 import java.io.IOException
@@ -27,7 +24,7 @@ class CategoriesListAdapter(private val dataSet: List<Category>) :
                 binding.ivCategoryImage.setImageDrawable(drawable)
             } catch (e: IOException) {
                 Log.e(
-                    "CategoriesListAdapter",
+                    "CategoriesAdapter",
                     "Error loading image: ${category.imageUrl}",
                     e
                 )
