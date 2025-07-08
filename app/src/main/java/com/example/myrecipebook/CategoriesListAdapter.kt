@@ -11,7 +11,17 @@ import java.io.IOException
 class CategoriesListAdapter(private val dataSet: List<Category>) :
     RecyclerView.Adapter<CategoriesListAdapter.ViewHolder>() {
 
-    class ViewHolder(private val binding: ItemCategoryBinding) :
+    interface OnItemClickListener {
+        fun onItemClick(category: Category)
+    }
+
+    private var itemClickListener: OnItemClickListener? = null
+
+    fun setOnItemClickListener(listener: OnItemClickListener) {
+        itemClickListener = listener
+    }
+
+    inner class ViewHolder(private val binding: ItemCategoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(category: Category) {
@@ -28,6 +38,10 @@ class CategoriesListAdapter(private val dataSet: List<Category>) :
                     "Error loading image: ${category.imageUrl}",
                     e
                 )
+            }
+
+            binding.root.setOnClickListener {
+                itemClickListener?.onItemClick(category)
             }
         }
     }
