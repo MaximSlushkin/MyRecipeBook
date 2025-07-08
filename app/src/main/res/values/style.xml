@@ -33,7 +33,7 @@
 
     <style name="TextAppearance.CategoryDescription" parent="TextAppearance.MaterialComponents.Body2">
         <item name="android:textSize">12sp</item>
-        <item name="android:fontFamily">@font/montserrat_variable_font_wght</item>
+        <item name="android:fontFamily">@font/montserrat_medium</item>
         <item name="android:textColor">@color/text_categories_description</item>
     </style>
 
