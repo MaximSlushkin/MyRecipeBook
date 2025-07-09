@@ -1,6 +1,7 @@
 package com.example.myrecipebook
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,12 @@ import androidx.fragment.app.replace
 import com.example.myrecipebook.databinding.FragmentListCategoriesBinding
 
 class CategoriesListFragment : Fragment() {
+
+    companion object {
+        const val ARG_CATEGORY_ID = "category_id"
+        const val ARG_CATEGORY_NAME = "category_name"
+        const val ARG_CATEGORY_IMAGE_URL = "category_image_url"
+    }
 
     private var _binding: FragmentListCategoriesBinding? = null
     private val binding
@@ -40,18 +47,35 @@ class CategoriesListFragment : Fragment() {
         val categoriesAdapter = CategoriesListAdapter(BackendSingleton.getCategories())
         binding.rvCategories.adapter = categoriesAdapter
 
-        categoriesAdapter.setOnItemClickListener(object : CategoriesListAdapter.OnItemClickListener {
-            override fun onItemClick(category: Category) {
-                openRecipesByCategoryId()
+        categoriesAdapter.setOnItemClickListener(object :
+            CategoriesListAdapter.OnItemClickListener {
+            override fun onItemClick(categoryId: Int) {
+                openRecipesByCategoryId(categoryId)
             }
         })
     }
-    private fun openRecipesByCategoryId() {
-        parentFragmentManager.commit {
-            setReorderingAllowed(true)
-            replace<RecipesListFragment>(R.id.mainContainer)
-            addToBackStack(null)
+
+    private fun openRecipesByCategoryId(categoryId: Int) {
+        val category = BackendSingleton.getCategories().find { it.id == categoryId }
+        if (category != null) {
+
+            val bundle = Bundle().apply {
+                putInt(ARG_CATEGORY_ID, categoryId)
+                putString(ARG_CATEGORY_NAME, category.title)
+                putString(ARG_CATEGORY_IMAGE_URL, category.imageUrl)
+            }
+
+            val recipesFragment = RecipesListFragment().apply {
+                arguments = bundle
+            }
+
+            parentFragmentManager.commit {
+                setReorderingAllowed(true)
+                replace<RecipesListFragment>(R.id.mainContainer)
+                addToBackStack(null)
+            }
+        } else {
+            Log.e("CategoriesFragment", "Category with ID $categoryId not found")
         }
     }
-
 }

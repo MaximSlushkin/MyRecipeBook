@@ -13,6 +13,6 @@
         android:text="Recipes List"
         android:textSize="24sp"
         android:textStyle="bold"
-        tools:ignore="MissingConstraints" />
+        tools:ignore="HardcodedText,MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
