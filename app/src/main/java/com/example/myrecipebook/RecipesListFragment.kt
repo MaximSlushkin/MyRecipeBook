@@ -55,7 +55,6 @@ class RecipesListFragment : Fragment() {
     private fun setCategoryHeaderImage(imageUrl: String?) {
         try {
             imageUrl?.let {
-
                 val inputStream = requireContext().assets.open(it)
                 val drawable = Drawable.createFromStream(inputStream, null)
                 binding.ivCategoryHeader.setImageDrawable(drawable)

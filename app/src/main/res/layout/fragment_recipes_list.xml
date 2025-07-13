@@ -41,7 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginHorizontal="@dimen/default_rounded_margins"
-        android:layout_marginTop="@dimen/default_rounded_margins"
+        android:layout_marginTop="@dimen/header_margin"
         app:spanCount="1"
         tools:itemCount="8"
         tools:listitem="@layout/item_recipe" />
