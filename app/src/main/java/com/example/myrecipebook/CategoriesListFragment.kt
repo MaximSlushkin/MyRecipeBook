@@ -44,7 +44,7 @@ class CategoriesListFragment : Fragment() {
     }
 
     private fun initRecycler() {
-        val categoriesAdapter = CategoriesListAdapter(BackendSingleton.getCategories())
+        val categoriesAdapter = CategoriesListAdapter(STUB.getCategories())
         binding.rvCategories.adapter = categoriesAdapter
 
         categoriesAdapter.setOnItemClickListener(object :
@@ -56,7 +56,7 @@ class CategoriesListFragment : Fragment() {
     }
 
     private fun openRecipesByCategoryId(categoryId: Int) {
-        val category = BackendSingleton.getCategories().find { it.id == categoryId }
+        val category = STUB.getCategories().find { it.id == categoryId }
         if (category != null) {
 
             val bundle = Bundle().apply {

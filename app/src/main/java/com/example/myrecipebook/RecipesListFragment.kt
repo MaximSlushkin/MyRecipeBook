@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myrecipebook.CategoriesListFragment.Companion.ARG_CATEGORY_ID
 import com.example.myrecipebook.CategoriesListFragment.Companion.ARG_CATEGORY_IMAGE_URL
 import com.example.myrecipebook.CategoriesListFragment.Companion.ARG_CATEGORY_NAME
@@ -67,7 +67,7 @@ class RecipesListFragment : Fragment() {
 
     private fun initRecycler(recipes: List<Recipe>) {
         val adapter = RecipesListAdapter(recipes)
-        binding.rvRecipes.layoutManager = GridLayoutManager(context, 2)
+        binding.rvRecipes.layoutManager = LinearLayoutManager(context)
         binding.rvRecipes.adapter = adapter
 
         adapter.setOnItemClickListener(object : RecipesListAdapter.OnItemClickListener {

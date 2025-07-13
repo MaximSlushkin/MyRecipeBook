@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="@dimen/default_rounded_margins"
@@ -24,7 +23,7 @@
             android:layout_height="@dimen/category_image_height"
             android:contentDescription="@string/burger_categories_description"
             android:scaleType="centerCrop"
-            tools:src="@drawable/burger" />
+            />
 
         <TextView
             android:id="@+id/tvCategoryTitle"

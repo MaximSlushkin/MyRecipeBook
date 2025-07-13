@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myrecipebook.databinding.ItemRecipeBinding
 import java.io.IOException
 
-class RecipesListAdapter (private val dataSet: List<Recipe>) :
+class RecipesListAdapter(private val dataSet: List<Recipe>) :
     RecyclerView.Adapter<RecipesListAdapter.ViewHolder>() {
 
     interface OnItemClickListener {

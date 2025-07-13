@@ -3,9 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    android:layout_marginHorizontal="@dimen/default_rounded_margins"
+    android:layout_marginBottom="@dimen/header_margin"
+    android:background="@color/white"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?selectableItemBackground"
+    app:cardCornerRadius="@dimen/default_rounded_margins"
+    app:cardElevation="@dimen/category_elevation">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,17 +20,17 @@
         <ImageView
             android:id="@+id/ivRecipeImage"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_height="@dimen/category_image_height"
             android:contentDescription="@string/recipe_image_description"
             android:scaleType="centerCrop" />
 
         <TextView
             android:id="@+id/tvRecipeTitle"
-            android:layout_width="match_parent"
+            style="@style/TextAppearance.CategoriesCard"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:textAlignment="center"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:layout_marginStart="@dimen/default_rounded_margins"
+            android:layout_marginTop="@dimen/default_rounded_margins"
+            android:layout_marginBottom="@dimen/default_rounded_margins" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>
