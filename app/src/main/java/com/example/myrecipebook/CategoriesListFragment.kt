@@ -12,12 +12,6 @@ import com.example.myrecipebook.databinding.FragmentListCategoriesBinding
 
 class CategoriesListFragment : Fragment() {
 
-    companion object {
-        const val ARG_CATEGORY_ID = "category_id"
-        const val ARG_CATEGORY_NAME = "category_name"
-        const val ARG_CATEGORY_IMAGE_URL = "category_image_url"
-    }
-
     private var _binding: FragmentListCategoriesBinding? = null
     private val binding
         get() = _binding ?: throw IllegalStateException(

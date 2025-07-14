@@ -10,10 +10,6 @@ import androidx.fragment.app.Fragment
 
 class RecipeFragment : Fragment() {
 
-    companion object {
-        const val ARG_RECIPE = "recipe"
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

@@ -10,17 +10,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.myrecipebook.CategoriesListFragment.Companion.ARG_CATEGORY_ID
-import com.example.myrecipebook.CategoriesListFragment.Companion.ARG_CATEGORY_IMAGE_URL
-import com.example.myrecipebook.CategoriesListFragment.Companion.ARG_CATEGORY_NAME
 import com.example.myrecipebook.databinding.FragmentRecipesListBinding
 import java.io.IOException
 
 class RecipesListFragment : Fragment() {
-
-    companion object {
-        const val ARG_RECIPE = "recipe"
-    }
 
     private var categoryId: Int? = null
     private var categoryName: String? = null
