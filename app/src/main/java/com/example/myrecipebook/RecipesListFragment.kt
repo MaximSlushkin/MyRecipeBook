@@ -10,9 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.myrecipebook.CategoriesListFragment.Companion.ARG_CATEGORY_ID
-import com.example.myrecipebook.CategoriesListFragment.Companion.ARG_CATEGORY_IMAGE_URL
-import com.example.myrecipebook.CategoriesListFragment.Companion.ARG_CATEGORY_NAME
 import com.example.myrecipebook.databinding.FragmentRecipesListBinding
 import java.io.IOException
 
@@ -78,15 +75,22 @@ class RecipesListFragment : Fragment() {
 
     private fun openRecipeByRecipeId(recipeId: Int) {
         Log.d("RecipesFragment", "Opening recipe ID: $recipeId")
-        parentFragmentManager.commit {
-            setReorderingAllowed(true)
-            replace<RecipeFragment>(R.id.mainContainer)
-            addToBackStack(null)
-        }
-    }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+        STUB.getRecipeById(recipeId)?.let { recipe ->
+            val bundle = Bundle().apply {
+                putParcelable(ARG_RECIPE, recipe)
+            }
+
+            parentFragmentManager.commit {
+                setReorderingAllowed(true)
+                replace<RecipeFragment>(R.id.mainContainer, args = bundle)
+                addToBackStack(null)
+            }
+        }
+
+        fun onDestroyView() {
+            super.onDestroyView()
+            _binding = null
+        }
     }
 }
