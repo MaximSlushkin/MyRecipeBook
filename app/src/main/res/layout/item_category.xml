@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="@dimen/default_rounded_margins"
     android:layout_marginBottom="@dimen/header_margin"
-    android:background="@color/white"
+    app:cardBackgroundColor="@color/background_color"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?selectableItemBackground"

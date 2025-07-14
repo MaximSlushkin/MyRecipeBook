@@ -52,6 +52,8 @@
             android:layout_weight="1"
             android:backgroundTint="@color/button_inactive_color"
             android:text="@string/title_favorites"
+            android:singleLine="true"
+            android:ellipsize="none"
             android:textColor="@color/white"
             app:icon="@drawable/ic_heart_empty"
             app:iconGravity="textEnd"

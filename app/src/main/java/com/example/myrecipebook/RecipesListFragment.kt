@@ -18,6 +18,10 @@ import java.io.IOException
 
 class RecipesListFragment : Fragment() {
 
+    companion object {
+        const val ARG_RECIPE = "recipe"
+    }
+
     private var categoryId: Int? = null
     private var categoryName: String? = null
     private var categoryImageUrl: String? = null
@@ -78,15 +82,22 @@ class RecipesListFragment : Fragment() {
 
     private fun openRecipeByRecipeId(recipeId: Int) {
         Log.d("RecipesFragment", "Opening recipe ID: $recipeId")
-        parentFragmentManager.commit {
-            setReorderingAllowed(true)
-            replace<RecipeFragment>(R.id.mainContainer)
-            addToBackStack(null)
-        }
-    }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+        STUB.getRecipeById(recipeId)?.let { recipe ->
+            val bundle = Bundle().apply {
+                putParcelable(ARG_RECIPE, recipe)
+            }
+
+            parentFragmentManager.commit {
+                setReorderingAllowed(true)
+                replace<RecipeFragment>(R.id.mainContainer, args = bundle)
+                addToBackStack(null)
+            }
+        }
+
+        fun onDestroyView() {
+            super.onDestroyView()
+            _binding = null
+        }
     }
 }
