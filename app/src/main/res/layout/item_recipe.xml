@@ -18,28 +18,19 @@
         android:orientation="vertical">
 
         <ImageView
-            android:id="@+id/ivCategoryImage"
+            android:id="@+id/ivRecipeImage"
             android:layout_width="match_parent"
             android:layout_height="@dimen/category_image_height"
-            android:contentDescription="@string/burger_categories_description"
-            android:scaleType="centerCrop"
-            />
+            android:contentDescription="@string/recipe_image_description"
+            android:scaleType="centerCrop" />
 
         <TextView
-            android:id="@+id/tvCategoryTitle"
+            android:id="@+id/tvRecipeTitle"
             style="@style/TextAppearance.CategoriesCard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/default_rounded_margins"
             android:layout_marginTop="@dimen/default_rounded_margins"
-            android:text="@string/burger_categories" />
-
-        <TextView
-            android:id="@+id/tvCategoryDescription"
-            style="@style/TextAppearance.CategoryDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/default_rounded_margins"
-            android:text="@string/burger_description" />
+            android:layout_marginBottom="@dimen/default_rounded_margins" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>
