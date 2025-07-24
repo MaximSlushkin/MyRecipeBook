@@ -8,5 +8,7 @@
     <dimen name="header_margin">16dp</dimen>
     <dimen name="category_image_height">130dp</dimen>
     <dimen name="category_elevation">4dp</dimen>
+    <dimen name="margin_top_20dp">20dp</dimen>
+    <dimen name="margin_end_12dp">12dp</dimen>
 
 </resources>

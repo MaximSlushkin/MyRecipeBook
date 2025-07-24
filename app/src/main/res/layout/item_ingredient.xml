@@ -11,23 +11,20 @@
         style="@style/TextAppearance.CategoryIngredients"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_end_12dp"
+        android:paddingEnd="@dimen/default_rounded_margins"
+        android:paddingStart="@dimen/default_rounded_margins"
         android:layout_weight="3"
         tools:text="Фарш говяжий" />
 
     <TextView
-        android:id="@+id/tvQuantity"
+        android:id="@+id/tvQuantityWithUnit"
         style="@style/TextAppearance.CategoryIngredients"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        tools:text="150" />
-
-    <TextView
-        android:id="@+id/tvUnit"
-        style="@style/TextAppearance.CategoryIngredients"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        tools:text="г" />
+        android:layout_marginEnd="@dimen/margin_end_12dp"
+        android:gravity="end"
+        android:layout_marginStart="@dimen/default_rounded_margins"
+        tools:text="150 г" />
 
 </LinearLayout>

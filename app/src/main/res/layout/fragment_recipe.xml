@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/status_bar_color">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -14,12 +14,12 @@
             android:id="@+id/ivRecipeHeader"
             android:layout_width="0dp"
             android:layout_height="@dimen/header_height"
-            android:scaleType="centerCrop"
             android:background="@color/white"
+            android:contentDescription="@string/recipe_image_description"
+            android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-           />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tvRecipeName"
@@ -30,9 +30,9 @@
             android:layout_marginBottom="@dimen/header_margin"
             android:background="@drawable/rounded_background"
             android:padding="@dimen/header_text_padding"
-            android:text="Классический гамбургер"
             app:layout_constraintBottom_toBottomOf="@+id/ivRecipeHeader"
-            app:layout_constraintStart_toStartOf="@+id/ivRecipeHeader" />
+            app:layout_constraintStart_toStartOf="@+id/ivRecipeHeader"
+            tools:text="Классический гамбургер" />
 
         <TextView
             android:id="@+id/tvIngredientsTitle"
@@ -40,17 +40,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/header_margin"
-            android:layout_marginBottom="@dimen/header_margin"
-            android:padding="@dimen/header_margin"
+            android:layout_marginTop="@dimen/header_margin"
+            android:text="@string/ingredients"
             app:layout_constraintStart_toStartOf="@+id/ivRecipeHeader"
-            app:layout_constraintTop_toBottomOf="@+id/tvRecipeName"
-            tools:text="Ингредиенты" />
+            app:layout_constraintTop_toBottomOf="@+id/ivRecipeHeader" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvIngredients"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/default_rounded_margins"
+            android:layout_marginHorizontal="@dimen/header_margin"
+            android:layout_marginTop="@dimen/header_margin"
+            android:background="@drawable/rounded_background"
             android:nestedScrollingEnabled="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -63,18 +64,20 @@
             style="@style/TextAppearance.CategoriesHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/default_rounded_margins"
-            android:layout_marginTop="@dimen/header_margin"
+            android:layout_marginStart="@dimen/header_margin"
+            android:layout_marginTop="@dimen/margin_top_20dp"
+            android:text="@string/cooking_method"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/rvIngredients"
-            tools:text="Способ приготовления" />
+            app:layout_constraintTop_toBottomOf="@+id/rvIngredients" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvMethod"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/default_rounded_margins"
+            android:layout_marginHorizontal="@dimen/header_margin"
+            android:layout_marginTop="@dimen/header_margin"
+            android:background="@drawable/rounded_background"
             android:nestedScrollingEnabled="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

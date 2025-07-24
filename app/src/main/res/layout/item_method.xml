@@ -7,20 +7,12 @@
     android:paddingVertical="@dimen/default_rounded_margins">
 
     <TextView
-        android:id="@+id/tvStepNumber"
+        android:id="@+id/tvStep"
         style="@style/TextAppearance.CategoryIngredients"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
-        tools:text="1." />
-
-    <TextView
-        android:id="@+id/tvStepText"
-        style="@style/TextAppearance.CategoryIngredients"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="12dp"
         android:textAllCaps="false"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_weight="1"
         tools:text="Разогрейте сковороду и обжаривайте фарш до готовности." />
 </LinearLayout>

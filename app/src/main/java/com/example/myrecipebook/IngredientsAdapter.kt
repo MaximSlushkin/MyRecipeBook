@@ -5,15 +5,14 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myrecipebook.databinding.ItemIngredientBinding
 
-class IngredientsAdapter (private val ingredients: List<Ingredient>) :
+class IngredientsAdapter(private val ingredients: List<Ingredient>) :
     RecyclerView.Adapter<IngredientsAdapter.ViewHolder>() {
 
     inner class ViewHolder(private val binding: ItemIngredientBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(ingredient: Ingredient) {
-            binding.tvQuantity.text = ingredient.quantity
-            binding.tvUnit.text = ingredient.unitOfMeasure
+            binding.tvQuantityWithUnit.text = "${ingredient.quantity} ${ingredient.unitOfMeasure}"
             binding.tvDescription.text = ingredient.description
         }
     }
