@@ -16,7 +16,10 @@ import java.io.IOException
 class RecipeFragment : Fragment() {
 
     private var _binding: FragmentRecipeBinding? = null
-    private val binding get() = _binding!!
+    private val binding
+        get() = _binding ?: throw IllegalStateException(
+            "Binding for FragmentRecipeBinding must not be null."
+        )
 
     private lateinit var recipe: Recipe
 
@@ -67,17 +70,19 @@ class RecipeFragment : Fragment() {
 
         val ingredientsDivider =
             MaterialDividerItemDecoration(context, LinearLayoutManager.VERTICAL).apply {
-                setDividerColorResource(context, R.color.white)
+                setDividerColorResource(context, R.color.ingredient_separator)
                 dividerInsetStart = resources.getDimensionPixelSize(R.dimen.header_margin)
                 dividerInsetEnd = resources.getDimensionPixelSize(R.dimen.header_margin)
+                isLastItemDecorated = false
             }
         binding.rvIngredients.addItemDecoration(ingredientsDivider)
 
         val methodDivider =
             MaterialDividerItemDecoration(context, LinearLayoutManager.VERTICAL).apply {
-                setDividerColorResource(context, R.color.white)
+                setDividerColorResource(context, R.color.ingredient_separator)
                 dividerInsetStart = resources.getDimensionPixelSize(R.dimen.header_margin)
                 dividerInsetEnd = resources.getDimensionPixelSize(R.dimen.header_margin)
+                isLastItemDecorated = false
             }
         binding.rvMethod.addItemDecoration(methodDivider)
     }

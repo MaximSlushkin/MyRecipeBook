@@ -19,7 +19,10 @@ class RecipesListFragment : Fragment() {
     private var categoryName: String? = null
     private var categoryImageUrl: String? = null
     private var _binding: FragmentRecipesListBinding? = null
-    private val binding get() = _binding!!
+    private val binding
+        get() = _binding ?: throw IllegalStateException(
+            "Binding for FragmentRecipesListBinding must not be null."
+        )
 
     override fun onCreateView(
         inflater: LayoutInflater,

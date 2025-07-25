@@ -12,7 +12,7 @@ class MethodAdapter(private val steps: List<String>) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(step: String, position: Int) {
-            binding.tvStep.text = "${position + 1}.$step"
+            binding.tvStep.text = "${position + 1}. $step"
         }
     }
 
