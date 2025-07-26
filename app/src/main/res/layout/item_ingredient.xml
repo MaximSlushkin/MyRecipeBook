@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingVertical="@dimen/default_rounded_margins">
+
+    <TextView
+        android:id="@+id/tvDescription"
+        style="@style/TextAppearance.CategoryIngredients"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_end_12dp"
+        android:paddingEnd="@dimen/default_rounded_margins"
+        android:layout_weight="3"
+        tools:text="Фарш говяжий" />
+
+    <TextView
+        android:id="@+id/tvQuantityWithUnit"
+        style="@style/TextAppearance.CategoryIngredients"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margin_end_12dp"
+        android:gravity="end"
+        android:layout_marginStart="@dimen/default_rounded_margins"
+        tools:text="150 г" />
+
+</LinearLayout>
