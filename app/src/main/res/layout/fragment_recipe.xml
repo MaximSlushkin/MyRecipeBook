@@ -46,6 +46,7 @@
             app:layout_constraintTop_toBottomOf="@+id/ivRecipeHeader" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:paddingVertical="@dimen/category_elevation"
             android:id="@+id/rvIngredients"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -77,8 +78,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/header_margin"
             android:layout_marginTop="@dimen/header_margin"
-            android:paddingTop="@dimen/margin_end_12dp"
-            android:paddingBottom="@dimen/category_elevation"
+            android:paddingVertical="@dimen/category_elevation"
             android:background="@drawable/rounded_background_white"
             android:nestedScrollingEnabled="false"
             app:layout_constraintEnd_toEndOf="parent"
