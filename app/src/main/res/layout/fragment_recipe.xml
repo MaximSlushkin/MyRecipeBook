@@ -45,8 +45,41 @@
             app:layout_constraintStart_toStartOf="@+id/ivRecipeHeader"
             app:layout_constraintTop_toBottomOf="@+id/ivRecipeHeader" />
 
+        <TextView
+            android:id="@+id/tvPortionsTitle"
+            style="@style/TextAppearance.Portions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/header_margin"
+            android:layout_marginTop="@dimen/header_margin"
+            android:text="@string/portions"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvIngredientsTitle" />
+
+        <TextView
+            android:id="@+id/tvPortionsCount"
+            style="@style/TextAppearance.Portions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/seekbar_padding"
+            android:text="1"
+            app:layout_constraintBaseline_toBaselineOf="@id/tvPortionsTitle"
+            app:layout_constraintStart_toEndOf="@id/tvPortionsTitle"
+            tools:ignore="HardcodedText" />
+
+        <SeekBar
+            android:id="@+id/sbPortions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/header_margin"
+            android:layout_marginTop="@dimen/seekbar_padding"
+            android:max="4"
+            android:progress="0"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tvPortionsCount"
+            app:layout_constraintTop_toBottomOf="@id/tvPortionsTitle" />
+
         <androidx.recyclerview.widget.RecyclerView
-            android:paddingVertical="@dimen/category_elevation"
             android:id="@+id/rvIngredients"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -54,9 +87,10 @@
             android:layout_marginTop="@dimen/header_margin"
             android:background="@drawable/rounded_background_white"
             android:nestedScrollingEnabled="false"
+            android:paddingVertical="@dimen/category_elevation"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvIngredientsTitle"
+            app:layout_constraintTop_toBottomOf="@id/sbPortions"
             tools:itemCount="3"
             tools:listitem="@layout/item_ingredient" />
 
@@ -78,14 +112,15 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/header_margin"
             android:layout_marginTop="@dimen/header_margin"
-            android:paddingVertical="@dimen/category_elevation"
             android:background="@drawable/rounded_background_white"
             android:nestedScrollingEnabled="false"
+            android:paddingVertical="@dimen/category_elevation"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvMethodTitle"
             tools:itemCount="5"
             tools:listitem="@layout/item_method" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

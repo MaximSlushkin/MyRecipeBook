@@ -10,6 +10,7 @@
     <string name="recipe_image_description">Изображение рецепта</string>
     <string name="ingredients">Ингредиенты</string>
     <string name="cooking_method">Способ приготовления</string>
+    <string name="portions">Порции:</string>
 
 
 </resources>

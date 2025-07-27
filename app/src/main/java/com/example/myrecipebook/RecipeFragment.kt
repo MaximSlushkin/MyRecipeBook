@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myrecipebook.databinding.FragmentRecipeBinding
@@ -15,6 +16,7 @@ import java.io.IOException
 @Suppress("DEPRECATION")
 class RecipeFragment : Fragment() {
 
+    private lateinit var ingredientsAdapter: IngredientsAdapter
     private var _binding: FragmentRecipeBinding? = null
     private val binding
         get() = _binding ?: throw IllegalStateException(
@@ -38,6 +40,21 @@ class RecipeFragment : Fragment() {
 
         initUI()
         initRecyclers()
+        initPortionsSeekBar()
+    }
+
+    private fun initPortionsSeekBar() {
+        binding.sbPortions.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+
+                val portions = progress + 1
+                binding.tvPortionsCount.text = portions.toString()
+                ingredientsAdapter.updateIngredients(portions)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
     }
 
     private fun initUI() {
@@ -54,8 +71,10 @@ class RecipeFragment : Fragment() {
 
     private fun initRecyclers() {
 
+        ingredientsAdapter = IngredientsAdapter(recipe.ingredients)
+
         binding.rvIngredients.layoutManager = LinearLayoutManager(context)
-        val ingredientsAdapter = IngredientsAdapter(recipe.ingredients)
+
         binding.rvIngredients.adapter = ingredientsAdapter
 
         binding.rvMethod.layoutManager = LinearLayoutManager(context)

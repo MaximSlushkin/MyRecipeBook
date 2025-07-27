@@ -8,4 +8,9 @@ data class Ingredient(
     val quantity: String,
     val unitOfMeasure: String,
     val description: String,
-) : Parcelable
+) : Parcelable {
+
+    fun getQuantityFloat(): Float {
+        return quantity.replace(",", ".").toFloatOrNull() ?: 0f
+    }
+}

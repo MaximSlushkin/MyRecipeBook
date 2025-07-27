@@ -8,11 +8,28 @@ import com.example.myrecipebook.databinding.ItemIngredientBinding
 class IngredientsAdapter(private val ingredients: List<Ingredient>) :
     RecyclerView.Adapter<IngredientsAdapter.ViewHolder>() {
 
+    private var portionCount: Int = 1
+
+    fun updateIngredients(progress: Int) {
+        portionCount = progress
+        notifyDataSetChanged()
+    }
+
     inner class ViewHolder(private val binding: ItemIngredientBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(ingredient: Ingredient) {
-            binding.tvQuantityWithUnit.text = "${ingredient.quantity} ${ingredient.unitOfMeasure}"
+
+            val quantity = ingredient.getQuantityFloat()
+            val totalQuantity = quantity * portionCount
+
+            val formattedQuantity = if (totalQuantity % 1 == 0f) {
+                totalQuantity.toInt().toString()
+            } else {
+                "%.1f".format(totalQuantity)
+            }
+
+            binding.tvQuantityWithUnit.text = "$formattedQuantity ${ingredient.unitOfMeasure}"
             binding.tvDescription.text = ingredient.description
         }
     }
