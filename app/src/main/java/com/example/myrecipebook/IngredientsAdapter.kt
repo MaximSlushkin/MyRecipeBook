@@ -4,6 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myrecipebook.databinding.ItemIngredientBinding
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 class IngredientsAdapter(private val ingredients: List<Ingredient>) :
     RecyclerView.Adapter<IngredientsAdapter.ViewHolder>() {
@@ -20,13 +22,18 @@ class IngredientsAdapter(private val ingredients: List<Ingredient>) :
 
         fun bind(ingredient: Ingredient) {
 
-            val quantity = ingredient.getQuantityFloat()
-            val totalQuantity = quantity * portionCount
+            val quantity = try {
+                BigDecimal(ingredient.quantity.replace(",", "."))
+            } catch (e: Exception) {
+                BigDecimal.ZERO
+            }
 
-            val formattedQuantity = if (totalQuantity % 1 == 0f) {
+            val totalQuantity = quantity.multiply(BigDecimal(portionCount))
+
+            val formattedQuantity = if (totalQuantity.scale() <= 0) {
                 totalQuantity.toInt().toString()
             } else {
-                "%.1f".format(totalQuantity)
+                totalQuantity.setScale(1, RoundingMode.HALF_UP).toString()
             }
 
             binding.tvQuantityWithUnit.text = "$formattedQuantity ${ingredient.unitOfMeasure}"

@@ -47,7 +47,7 @@ class RecipeFragment : Fragment() {
         binding.sbPortions.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
 
-                val portions = progress + 1
+                val portions = progress
                 binding.tvPortionsCount.text = portions.toString()
                 ingredientsAdapter.updateIngredients(portions)
             }
