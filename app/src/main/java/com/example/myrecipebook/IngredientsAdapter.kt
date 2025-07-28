@@ -22,19 +22,13 @@ class IngredientsAdapter(private val ingredients: List<Ingredient>) :
 
         fun bind(ingredient: Ingredient) {
 
-            val quantity = try {
+            val formattedQuantity = runCatching {
                 BigDecimal(ingredient.quantity.replace(",", "."))
-            } catch (e: Exception) {
-                BigDecimal.ZERO
-            }
-
-            val totalQuantity = quantity.multiply(BigDecimal(portionCount))
-
-            val formattedQuantity = if (totalQuantity.scale() <= 0) {
-                totalQuantity.toInt().toString()
-            } else {
-                totalQuantity.setScale(1, RoundingMode.HALF_UP).toString()
-            }
+            }.getOrDefault(BigDecimal.ZERO)
+                .multiply(BigDecimal(portionCount))
+                .setScale(1, RoundingMode.HALF_UP)
+                .stripTrailingZeros()
+                .toPlainString()
 
             binding.tvQuantityWithUnit.text = "$formattedQuantity ${ingredient.unitOfMeasure}"
             binding.tvDescription.text = ingredient.description
