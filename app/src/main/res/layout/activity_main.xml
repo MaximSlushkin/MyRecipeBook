@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/half_padding_am"
             android:layout_weight="1"
-            android:backgroundTint="@color/button_active_color"
+            android:backgroundTint="@color/button_slider_color"
             android:text="@string/title_categories"
             android:textColor="@color/white"
             tools:ignore="VisualLintButtonSize" />
