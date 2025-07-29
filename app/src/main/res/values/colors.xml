@@ -10,4 +10,8 @@
     <color name="text_header_categories">#5F3678</color>
     <color name="text_categories_description">#666666</color>
     <color name="ingredient_separator">#F5F5F5</color>
+    <color name="seekbar_progress">#A1A9F9</color>
+    <color name="seekbar_thumb">#525DC0</color>
+
+
 </resources>
