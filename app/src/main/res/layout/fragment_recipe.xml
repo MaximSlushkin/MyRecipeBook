@@ -21,6 +21,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageButton
+            android:id="@+id/ibFavorite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/header_margin"
+            android:layout_marginEnd="@dimen/header_margin"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:backgroundTint="@color/background_color"
+            android:contentDescription="@string/add_favorite_icon"
+            android:padding="@dimen/header_margin"
+            app:layout_constraintEnd_toEndOf="@id/ivRecipeHeader"
+            app:layout_constraintTop_toTopOf="@id/ivRecipeHeader"
+            tools:src="@drawable/ic_heart_empty" />
+
         <TextView
             android:id="@+id/tvRecipeName"
             style="@style/TextAppearance.CategoriesHeader"
