@@ -3,11 +3,12 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="background_color">#F4FAFF</color>
-    <color name="button_active_color">#525DC0</color>
+    <color name="button_slider_color">#525DC0</color>
     <color name="button_inactive_color">#E13E3E</color>
     <color name="status_bar_color">#F4FAFF</color>
     <color name="header_text_background">#80000000</color>
     <color name="text_header_categories">#5F3678</color>
     <color name="text_categories_description">#666666</color>
     <color name="ingredient_separator">#F5F5F5</color>
+    <color name="seekbar_progress_color">#A1A9F9</color>
 </resources>
