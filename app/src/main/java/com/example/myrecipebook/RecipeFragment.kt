@@ -1,5 +1,6 @@
 package com.example.myrecipebook
 
+import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
@@ -46,11 +47,33 @@ class RecipeFragment : Fragment() {
         initFavoriteButton()
     }
 
+    private fun saveFavorites(favorites: Set<String>) {
+        val sharedPref = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            putStringSet(FAVORITES_KEY, favorites)
+            apply()
+        }
+    }
+
+    private fun getFavorites(): MutableSet<String> {
+        val sharedPref = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val favorites = sharedPref.getStringSet(FAVORITES_KEY, null) ?: mutableSetOf()
+        return HashSet(favorites)
+    }
+
     private fun initFavoriteButton() {
+        val favorites = getFavorites()
+        isFavorite = favorites.contains(recipe.id.toString())
+
         binding.ibFavorite.setOnClickListener {
             isFavorite = !isFavorite
             updateFavoriteIcon()
 
+            val favoritesSet = getFavorites().apply {
+                if (isFavorite) add(recipe.id.toString())
+                else remove(recipe.id.toString())
+            }
+            saveFavorites(favoritesSet)
         }
         updateFavoriteIcon()
     }
