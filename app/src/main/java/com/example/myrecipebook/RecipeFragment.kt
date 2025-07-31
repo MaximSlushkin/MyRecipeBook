@@ -36,8 +36,6 @@ class RecipeFragment : Fragment() {
 
     private var isFavorite: Boolean = false
 
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         recipe = getRecipeFromArguments() ?: return
@@ -65,7 +63,6 @@ class RecipeFragment : Fragment() {
         }
         binding.ibFavorite.setImageResource(iconRes)
     }
-
 
     private fun initPortionsSeekBar() {
         binding.sbPortions.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
