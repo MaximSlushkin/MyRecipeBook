@@ -34,6 +34,8 @@ class RecipeFragment : Fragment() {
         return binding.root
     }
 
+    private var isFavorite: Boolean = false
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         recipe = getRecipeFromArguments() ?: return
@@ -41,6 +43,25 @@ class RecipeFragment : Fragment() {
         initUI()
         initRecyclers()
         initPortionsSeekBar()
+        initFavoriteButton()
+    }
+
+    private fun initFavoriteButton() {
+        binding.ibFavorite.setOnClickListener {
+            isFavorite = !isFavorite
+            updateFavoriteIcon()
+
+        }
+        updateFavoriteIcon()
+    }
+
+    private fun updateFavoriteIcon() {
+        val iconRes = if (isFavorite) {
+            R.drawable.ic_heart_filled
+        } else {
+            R.drawable.ic_heart_empty
+        }
+        binding.ibFavorite.setImageResource(iconRes)
     }
 
     private fun initPortionsSeekBar() {

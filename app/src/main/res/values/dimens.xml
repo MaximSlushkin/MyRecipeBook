@@ -12,5 +12,6 @@
     <dimen name="margin_end_12dp">12dp</dimen>
     <dimen name="seekbar_padding">6dp</dimen>
     <dimen name="thumb_height">30dp</dimen>
+    <dimen name="favorite_icon_size">40dp</dimen>
 
 </resources>
