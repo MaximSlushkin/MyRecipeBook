@@ -12,4 +12,7 @@
     <string name="cooking_method">Способ приготовления</string>
     <string name="portions">Порции:</string>
     <string name="add_favorite_icon">Кнопка добавить в избранное</string>
+    <string name="empty_favorites_message">Вы еще не добавили ни одного рецепта в избранное</string>
+    <string name="favorites_description">Вы еще не добавили ни одного рецепта в избранное</string>
+
 </resources>
