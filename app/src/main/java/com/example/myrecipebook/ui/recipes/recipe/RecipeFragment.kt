@@ -1,4 +1,4 @@
-package com.example.myrecipebook
+package com.example.myrecipebook.ui.recipes.recipe
 
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -10,7 +10,12 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.myrecipebook.ARG_RECIPE
+import com.example.myrecipebook.FAVORITES_KEY
+import com.example.myrecipebook.PREFS_NAME
+import com.example.myrecipebook.R
 import com.example.myrecipebook.databinding.FragmentRecipeBinding
+import com.example.myrecipebook.model.Recipe
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import java.io.IOException
 

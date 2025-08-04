@@ -1,4 +1,4 @@
-package com.example.myrecipebook
+package com.example.myrecipebook.model
 
 data class Category(
     val id: Int,

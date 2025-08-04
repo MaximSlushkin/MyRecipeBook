@@ -1,4 +1,4 @@
-package com.example.myrecipebook
+package com.example.myrecipebook.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

@@ -1,4 +1,4 @@
-package com.example.myrecipebook
+package com.example.myrecipebook.ui.recipes.recipelist
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -10,7 +10,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.myrecipebook.ARG_CATEGORY_ID
+import com.example.myrecipebook.ARG_CATEGORY_IMAGE_URL
+import com.example.myrecipebook.ARG_CATEGORY_NAME
+import com.example.myrecipebook.ARG_RECIPE
+import com.example.myrecipebook.R
+import com.example.myrecipebook.ui.recipes.recipe.RecipeFragment
+import com.example.myrecipebook.data.STUB
 import com.example.myrecipebook.databinding.FragmentRecipesListBinding
+import com.example.myrecipebook.model.Recipe
 import java.io.IOException
 
 class RecipesListFragment : Fragment() {

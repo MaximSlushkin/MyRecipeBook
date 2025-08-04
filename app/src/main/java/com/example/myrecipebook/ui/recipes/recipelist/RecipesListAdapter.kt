@@ -1,18 +1,19 @@
-package com.example.myrecipebook
+package com.example.myrecipebook.ui.recipes.recipelist
 
 import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myrecipebook.databinding.ItemCategoryBinding
+import com.example.myrecipebook.databinding.ItemRecipeBinding
+import com.example.myrecipebook.model.Recipe
 import java.io.IOException
 
-class CategoriesListAdapter(private val dataSet: List<Category>) :
-    RecyclerView.Adapter<CategoriesListAdapter.ViewHolder>() {
+class RecipesListAdapter(private val dataSet: List<Recipe>) :
+    RecyclerView.Adapter<RecipesListAdapter.ViewHolder>() {
 
     interface OnItemClickListener {
-        fun onItemClick(categoryId: Int)
+        fun onItemClick(recipeId: Int)
     }
 
     private var itemClickListener: OnItemClickListener? = null
@@ -21,34 +22,29 @@ class CategoriesListAdapter(private val dataSet: List<Category>) :
         itemClickListener = listener
     }
 
-    inner class ViewHolder(private val binding: ItemCategoryBinding) :
+    inner class ViewHolder(private val binding: ItemRecipeBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(category: Category) {
-            binding.tvCategoryTitle.text = category.title
-            binding.tvCategoryDescription.text = category.description
+        fun bind(recipe: Recipe) {
+            binding.tvRecipeTitle.text = recipe.title
 
             try {
-                val inputStream = itemView.context.assets.open(category.imageUrl)
+                val inputStream = itemView.context.assets.open(recipe.imageUrl)
                 val drawable = Drawable.createFromStream(inputStream, null)
-                binding.ivCategoryImage.setImageDrawable(drawable)
+                binding.ivRecipeImage.setImageDrawable(drawable)
             } catch (e: IOException) {
-                Log.e(
-                    "CategoriesAdapter",
-                    "Error loading image: ${category.imageUrl}",
-                    e
-                )
+                Log.e("RecipesAdapter", "Error loading image: ${recipe.imageUrl}", e)
             }
 
             binding.root.setOnClickListener {
-                itemClickListener?.onItemClick(category.id)
+                itemClickListener?.onItemClick(recipe.id)
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ItemCategoryBinding.inflate(inflater, parent, false)
+        val binding = ItemRecipeBinding.inflate(inflater, parent, false)
         return ViewHolder(binding)
     }
 
