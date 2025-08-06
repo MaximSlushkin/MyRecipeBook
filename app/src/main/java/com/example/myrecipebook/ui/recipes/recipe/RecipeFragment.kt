@@ -9,6 +9,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myrecipebook.ARG_RECIPE
 import com.example.myrecipebook.FAVORITES_KEY
@@ -17,24 +21,27 @@ import com.example.myrecipebook.R
 import com.example.myrecipebook.databinding.FragmentRecipeBinding
 import com.example.myrecipebook.model.Recipe
 import com.google.android.material.divider.MaterialDividerItemDecoration
+import kotlinx.coroutines.launch
 import java.io.IOException
 
 @Suppress("DEPRECATION")
 class RecipeFragment : Fragment() {
-
     private lateinit var ingredientsAdapter: IngredientsAdapter
     private var _binding: FragmentRecipeBinding? = null
     private val binding
-        get() = _binding ?: throw IllegalStateException(
-            "Binding for FragmentRecipeBinding must not be null."
-        )
+        get() =
+            _binding ?: throw IllegalStateException(
+                "Binding for FragmentRecipeBinding must not be null.",
+            )
 
     private lateinit var recipe: Recipe
+
+    private val viewModel: RecipeViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentRecipeBinding.inflate(inflater, container, false)
         return binding.root
@@ -42,7 +49,10 @@ class RecipeFragment : Fragment() {
 
     private var isFavorite: Boolean = false
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         recipe = getRecipeFromArguments() ?: return
 
@@ -50,6 +60,15 @@ class RecipeFragment : Fragment() {
         initRecyclers()
         initPortionsSeekBar()
         initFavoriteButton()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.state.observe(viewLifecycleOwner) { state ->
+
+                    Log.i("!!!", "isFavorite value: ${state.isFavorite}")
+                }
+            }
+        }
     }
 
     private fun saveFavorites(favorites: Set<String>) {
@@ -74,36 +93,47 @@ class RecipeFragment : Fragment() {
             isFavorite = !isFavorite
             updateFavoriteIcon()
 
-            val favoritesSet = getFavorites().apply {
-                if (isFavorite) add(recipe.id.toString())
-                else remove(recipe.id.toString())
-            }
+            val favoritesSet =
+                getFavorites().apply {
+                    if (isFavorite) {
+                        add(recipe.id.toString())
+                    } else {
+                        remove(recipe.id.toString())
+                    }
+                }
             saveFavorites(favoritesSet)
         }
         updateFavoriteIcon()
     }
 
     private fun updateFavoriteIcon() {
-        val iconRes = if (isFavorite) {
-            R.drawable.ic_heart_filled
-        } else {
-            R.drawable.ic_heart_empty
-        }
+        val iconRes =
+            if (isFavorite) {
+                R.drawable.ic_heart_filled
+            } else {
+                R.drawable.ic_heart_empty
+            }
         binding.ibFavorite.setImageResource(iconRes)
     }
 
     private fun initPortionsSeekBar() {
-        binding.sbPortions.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+        binding.sbPortions.setOnSeekBarChangeListener(
+            object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    seekBar: SeekBar?,
+                    progress: Int,
+                    fromUser: Boolean,
+                ) {
+                    val portions = progress
+                    binding.tvPortionsCount.text = portions.toString()
+                    ingredientsAdapter.updateIngredients(portions)
+                }
 
-                val portions = progress
-                binding.tvPortionsCount.text = portions.toString()
-                ingredientsAdapter.updateIngredients(portions)
-            }
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
 
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-        })
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+            },
+        )
     }
 
     private fun initUI() {
@@ -119,7 +149,6 @@ class RecipeFragment : Fragment() {
     }
 
     private fun initRecyclers() {
-
         ingredientsAdapter = IngredientsAdapter(recipe.ingredients)
 
         binding.rvIngredients.layoutManager = LinearLayoutManager(context)
@@ -155,9 +184,7 @@ class RecipeFragment : Fragment() {
         binding.rvMethod.addItemDecoration(methodDivider)
     }
 
-    private fun getRecipeFromArguments(): Recipe? {
-        return arguments?.getParcelable(ARG_RECIPE)
-    }
+    private fun getRecipeFromArguments(): Recipe? = arguments?.getParcelable(ARG_RECIPE)
 
     override fun onDestroyView() {
         super.onDestroyView()
