@@ -1,4 +1,8 @@
-package com.example.myrecipebook
+package com.example.myrecipebook.data
+
+import com.example.myrecipebook.model.Category
+import com.example.myrecipebook.model.Ingredient
+import com.example.myrecipebook.model.Recipe
 
 object STUB {
 

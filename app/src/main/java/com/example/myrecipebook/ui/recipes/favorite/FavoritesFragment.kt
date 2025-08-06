@@ -1,4 +1,4 @@
-package com.example.myrecipebook
+package com.example.myrecipebook.ui.recipes.favorite
 
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -11,7 +11,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.myrecipebook.ARG_RECIPE
+import com.example.myrecipebook.FAVORITES_KEY
+import com.example.myrecipebook.PREFS_NAME
+import com.example.myrecipebook.R
+import com.example.myrecipebook.data.STUB
 import com.example.myrecipebook.databinding.FragmentFavoritesBinding
+import com.example.myrecipebook.ui.recipes.recipe.RecipeFragment
+import com.example.myrecipebook.ui.recipes.recipelist.RecipesListAdapter
 import java.io.IOException
 
 class FavoritesFragment : Fragment() {
