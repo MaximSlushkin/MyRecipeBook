@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.myrecipebook.ARG_RECIPE
+import com.example.myrecipebook.ARG_RECIPE_ID
 import com.example.myrecipebook.FAVORITES_KEY
 import com.example.myrecipebook.PREFS_NAME
 import com.example.myrecipebook.R
@@ -24,19 +24,23 @@ import java.io.IOException
 class FavoritesFragment : Fragment() {
     private var _binding: FragmentFavoritesBinding? = null
     private val binding
-        get() = _binding
-            ?: throw IllegalStateException("Binding for FragmentFavoritesBinding must not be null")
+        get() =
+            _binding
+                ?: throw IllegalStateException("Binding for FragmentFavoritesBinding must not be null")
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentFavoritesBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         binding.tvFragmentTitle.text = getString(R.string.title_favorites)
         initRecycler()
@@ -50,12 +54,10 @@ class FavoritesFragment : Fragment() {
             binding.ivFavorite.setImageDrawable(drawable)
         } catch (e: IOException) {
             Log.e("FavoritesFragment", "Error loading header image", e)
-
         }
     }
 
     private fun initRecycler() {
-
         val favoritesIds = getFavorites().map { it.toInt() }.toSet()
 
         val favoriteRecipes = STUB.getRecipesByIds(favoritesIds)
@@ -71,11 +73,13 @@ class FavoritesFragment : Fragment() {
             binding.rvRecipes.layoutManager = LinearLayoutManager(context)
             binding.rvRecipes.adapter = adapter
 
-            adapter.setOnItemClickListener(object : RecipesListAdapter.OnItemClickListener {
-                override fun onItemClick(recipeId: Int) {
-                    openRecipeByRecipeId(recipeId)
-                }
-            })
+            adapter.setOnItemClickListener(
+                object : RecipesListAdapter.OnItemClickListener {
+                    override fun onItemClick(recipeId: Int) {
+                        openRecipeByRecipeId(recipeId)
+                    }
+                },
+            )
         }
     }
 
@@ -86,9 +90,10 @@ class FavoritesFragment : Fragment() {
 
     private fun openRecipeByRecipeId(recipeId: Int) {
         STUB.getRecipeById(recipeId)?.let { recipe ->
-            val bundle = Bundle().apply {
-                putParcelable(ARG_RECIPE, recipe)
-            }
+            val bundle =
+                Bundle().apply {
+                    putInt(ARG_RECIPE_ID, recipe.id)
+                }
 
             parentFragmentManager.commit {
                 setReorderingAllowed(true)

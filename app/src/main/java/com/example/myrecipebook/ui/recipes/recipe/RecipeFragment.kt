@@ -11,10 +11,11 @@ import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.myrecipebook.ARG_RECIPE
+import com.example.myrecipebook.ARG_RECIPE_ID
 import com.example.myrecipebook.FAVORITES_KEY
 import com.example.myrecipebook.PREFS_NAME
 import com.example.myrecipebook.R
@@ -54,21 +55,23 @@ class RecipeFragment : Fragment() {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        recipe = getRecipeFromArguments() ?: return
+
+        val recipeId = arguments?.getInt(ARG_RECIPE_ID, -1) ?: -1
+        if (recipeId == -1) return
+
+        ingredientsAdapter = IngredientsAdapter(emptyList())
+        binding.rvIngredients.layoutManager = LinearLayoutManager(context)
+        binding.rvIngredients.adapter = ingredientsAdapter
+
+        val methodAdapter = MethodAdapter(emptyList())
+        binding.rvMethod.layoutManager = LinearLayoutManager(context)
+        binding.rvMethod.adapter = methodAdapter
 
         initUI()
-        initRecyclers()
         initPortionsSeekBar()
         initFavoriteButton()
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.state.observe(viewLifecycleOwner) { state ->
-
-                    Log.i("!!!", "isFavorite value: ${state.isFavorite}")
-                }
-            }
-        }
+        viewModel.loadRecipe(recipeId)
     }
 
     private fun saveFavorites(favorites: Set<String>) {
@@ -86,24 +89,9 @@ class RecipeFragment : Fragment() {
     }
 
     private fun initFavoriteButton() {
-        val favorites = getFavorites()
-        isFavorite = favorites.contains(recipe.id.toString())
-
         binding.ibFavorite.setOnClickListener {
-            isFavorite = !isFavorite
-            updateFavoriteIcon()
-
-            val favoritesSet =
-                getFavorites().apply {
-                    if (isFavorite) {
-                        add(recipe.id.toString())
-                    } else {
-                        remove(recipe.id.toString())
-                    }
-                }
-            saveFavorites(favoritesSet)
+            viewModel.onFavoritesClicked()
         }
-        updateFavoriteIcon()
     }
 
     private fun updateFavoriteIcon() {
@@ -137,14 +125,31 @@ class RecipeFragment : Fragment() {
     }
 
     private fun initUI() {
-        binding.tvRecipeName.text = recipe.title
+        viewModel.state.observe(viewLifecycleOwner) { state ->
+            state.recipe?.let { recipe ->
+                this.recipe = recipe
+                binding.tvRecipeName.text = recipe.title
 
-        try {
-            val inputStream = requireContext().assets.open(recipe.imageUrl)
-            val drawable = Drawable.createFromStream(inputStream, null)
-            binding.ivRecipeHeader.setImageDrawable(drawable)
-        } catch (e: IOException) {
-            Log.e("RecipeFragment", "Error loading recipe image: ${recipe.imageUrl}", e)
+                try {
+                    val inputStream = requireContext().assets.open(recipe.imageUrl)
+                    val drawable = Drawable.createFromStream(inputStream, null)
+                    binding.ivRecipeHeader.setImageDrawable(drawable)
+                } catch (e: IOException) {
+                    Log.e("RecipeFragment", "Error loading recipe image: ${recipe.imageUrl}", e)
+                }
+
+                ingredientsAdapter = IngredientsAdapter(recipe.ingredients)
+                binding.rvIngredients.adapter = ingredientsAdapter
+
+                val methodAdapter = MethodAdapter(recipe.method)
+                binding.rvMethod.adapter = methodAdapter
+
+                addDividers()
+            }
+
+            isFavorite = state.isFavorite
+            updateFavoriteIcon()
+            binding.tvPortionsCount.text = state.portionCount.toString()
         }
     }
 
@@ -163,6 +168,18 @@ class RecipeFragment : Fragment() {
     }
 
     private fun addDividers() {
+        binding.rvIngredients.itemDecorationCount.let { count ->
+            for (i in count - 1 downTo 0) {
+                binding.rvIngredients.removeItemDecorationAt(i)
+            }
+        }
+
+        binding.rvMethod.itemDecorationCount.let { count ->
+            for (i in count - 1 downTo 0) {
+                binding.rvMethod.removeItemDecorationAt(i)
+            }
+        }
+
         val context = requireContext()
 
         val ingredientsDivider =
@@ -183,8 +200,6 @@ class RecipeFragment : Fragment() {
             }
         binding.rvMethod.addItemDecoration(methodDivider)
     }
-
-    private fun getRecipeFromArguments(): Recipe? = arguments?.getParcelable(ARG_RECIPE)
 
     override fun onDestroyView() {
         super.onDestroyView()
