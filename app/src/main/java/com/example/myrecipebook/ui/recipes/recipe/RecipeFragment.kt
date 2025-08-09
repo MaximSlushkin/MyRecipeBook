@@ -74,20 +74,6 @@ class RecipeFragment : Fragment() {
         viewModel.loadRecipe(recipeId)
     }
 
-    private fun saveFavorites(favorites: Set<String>) {
-        val sharedPref = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        with(sharedPref.edit()) {
-            putStringSet(FAVORITES_KEY, favorites)
-            apply()
-        }
-    }
-
-    private fun getFavorites(): MutableSet<String> {
-        val sharedPref = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val favorites = sharedPref.getStringSet(FAVORITES_KEY, null) ?: mutableSetOf()
-        return HashSet(favorites)
-    }
-
     private fun initFavoriteButton() {
         binding.ibFavorite.setOnClickListener {
             viewModel.onFavoritesClicked()
@@ -151,20 +137,6 @@ class RecipeFragment : Fragment() {
             updateFavoriteIcon()
             binding.tvPortionsCount.text = state.portionCount.toString()
         }
-    }
-
-    private fun initRecyclers() {
-        ingredientsAdapter = IngredientsAdapter(recipe.ingredients)
-
-        binding.rvIngredients.layoutManager = LinearLayoutManager(context)
-
-        binding.rvIngredients.adapter = ingredientsAdapter
-
-        binding.rvMethod.layoutManager = LinearLayoutManager(context)
-        val methodAdapter = MethodAdapter(recipe.method)
-        binding.rvMethod.adapter = methodAdapter
-
-        addDividers()
     }
 
     private fun addDividers() {
