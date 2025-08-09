@@ -48,8 +48,6 @@ class RecipeFragment : Fragment() {
         return binding.root
     }
 
-    private var isFavorite: Boolean = false
-
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
@@ -80,7 +78,7 @@ class RecipeFragment : Fragment() {
         }
     }
 
-    private fun updateFavoriteIcon() {
+    private fun updateFavoriteIcon(isFavorite: Boolean) {
         val iconRes =
             if (isFavorite) {
                 R.drawable.ic_heart_filled
@@ -133,8 +131,7 @@ class RecipeFragment : Fragment() {
                 addDividers()
             }
 
-            isFavorite = state.isFavorite
-            updateFavoriteIcon()
+            updateFavoriteIcon(state.isFavorite)
             binding.tvPortionsCount.text = state.portionCount.toString()
         }
     }
