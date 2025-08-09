@@ -13,35 +13,38 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myrecipebook.ARG_CATEGORY_ID
 import com.example.myrecipebook.ARG_CATEGORY_IMAGE_URL
 import com.example.myrecipebook.ARG_CATEGORY_NAME
-import com.example.myrecipebook.ARG_RECIPE
+import com.example.myrecipebook.ARG_RECIPE_ID
 import com.example.myrecipebook.R
-import com.example.myrecipebook.ui.recipes.recipe.RecipeFragment
 import com.example.myrecipebook.data.STUB
 import com.example.myrecipebook.databinding.FragmentRecipesListBinding
 import com.example.myrecipebook.model.Recipe
+import com.example.myrecipebook.ui.recipes.recipe.RecipeFragment
 import java.io.IOException
 
 class RecipesListFragment : Fragment() {
-
     private var categoryId: Int? = null
     private var categoryName: String? = null
     private var categoryImageUrl: String? = null
     private var _binding: FragmentRecipesListBinding? = null
     private val binding
-        get() = _binding ?: throw IllegalStateException(
-            "Binding for FragmentRecipesListBinding must not be null."
-        )
+        get() =
+            _binding ?: throw IllegalStateException(
+                "Binding for FragmentRecipesListBinding must not be null.",
+            )
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentRecipesListBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
 
         arguments?.let { bundle ->
@@ -77,20 +80,23 @@ class RecipesListFragment : Fragment() {
         binding.rvRecipes.layoutManager = LinearLayoutManager(context)
         binding.rvRecipes.adapter = adapter
 
-        adapter.setOnItemClickListener(object : RecipesListAdapter.OnItemClickListener {
-            override fun onItemClick(recipeId: Int) {
-                openRecipeByRecipeId(recipeId)
-            }
-        })
+        adapter.setOnItemClickListener(
+            object : RecipesListAdapter.OnItemClickListener {
+                override fun onItemClick(recipeId: Int) {
+                    openRecipeByRecipeId(recipeId)
+                }
+            },
+        )
     }
 
     private fun openRecipeByRecipeId(recipeId: Int) {
         Log.d("RecipesFragment", "Opening recipe ID: $recipeId")
 
         STUB.getRecipeById(recipeId)?.let { recipe ->
-            val bundle = Bundle().apply {
-                putParcelable(ARG_RECIPE, recipe)
-            }
+            val bundle =
+                Bundle().apply {
+                    putInt(ARG_RECIPE_ID, recipeId)
+                }
 
             parentFragmentManager.commit {
                 setReorderingAllowed(true)

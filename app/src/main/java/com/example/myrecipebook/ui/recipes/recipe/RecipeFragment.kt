@@ -11,10 +11,11 @@ import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.myrecipebook.ARG_RECIPE
+import com.example.myrecipebook.ARG_RECIPE_ID
 import com.example.myrecipebook.FAVORITES_KEY
 import com.example.myrecipebook.PREFS_NAME
 import com.example.myrecipebook.R
@@ -47,66 +48,37 @@ class RecipeFragment : Fragment() {
         return binding.root
     }
 
-    private var isFavorite: Boolean = false
-
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        recipe = getRecipeFromArguments() ?: return
+
+        val recipeId = arguments?.getInt(ARG_RECIPE_ID, -1) ?: -1
+        if (recipeId == -1) return
+
+        ingredientsAdapter = IngredientsAdapter(emptyList())
+        binding.rvIngredients.layoutManager = LinearLayoutManager(context)
+        binding.rvIngredients.adapter = ingredientsAdapter
+
+        val methodAdapter = MethodAdapter(emptyList())
+        binding.rvMethod.layoutManager = LinearLayoutManager(context)
+        binding.rvMethod.adapter = methodAdapter
 
         initUI()
-        initRecyclers()
         initPortionsSeekBar()
         initFavoriteButton()
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.state.observe(viewLifecycleOwner) { state ->
-
-                    Log.i("!!!", "isFavorite value: ${state.isFavorite}")
-                }
-            }
-        }
-    }
-
-    private fun saveFavorites(favorites: Set<String>) {
-        val sharedPref = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        with(sharedPref.edit()) {
-            putStringSet(FAVORITES_KEY, favorites)
-            apply()
-        }
-    }
-
-    private fun getFavorites(): MutableSet<String> {
-        val sharedPref = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val favorites = sharedPref.getStringSet(FAVORITES_KEY, null) ?: mutableSetOf()
-        return HashSet(favorites)
+        viewModel.loadRecipe(recipeId)
     }
 
     private fun initFavoriteButton() {
-        val favorites = getFavorites()
-        isFavorite = favorites.contains(recipe.id.toString())
-
         binding.ibFavorite.setOnClickListener {
-            isFavorite = !isFavorite
-            updateFavoriteIcon()
-
-            val favoritesSet =
-                getFavorites().apply {
-                    if (isFavorite) {
-                        add(recipe.id.toString())
-                    } else {
-                        remove(recipe.id.toString())
-                    }
-                }
-            saveFavorites(favoritesSet)
+            viewModel.onFavoritesClicked()
         }
-        updateFavoriteIcon()
     }
 
-    private fun updateFavoriteIcon() {
+    private fun updateFavoriteIcon(isFavorite: Boolean) {
         val iconRes =
             if (isFavorite) {
                 R.drawable.ic_heart_filled
@@ -137,32 +109,46 @@ class RecipeFragment : Fragment() {
     }
 
     private fun initUI() {
-        binding.tvRecipeName.text = recipe.title
+        viewModel.state.observe(viewLifecycleOwner) { state ->
+            state.recipe?.let { recipe ->
+                this.recipe = recipe
+                binding.tvRecipeName.text = recipe.title
 
-        try {
-            val inputStream = requireContext().assets.open(recipe.imageUrl)
-            val drawable = Drawable.createFromStream(inputStream, null)
-            binding.ivRecipeHeader.setImageDrawable(drawable)
-        } catch (e: IOException) {
-            Log.e("RecipeFragment", "Error loading recipe image: ${recipe.imageUrl}", e)
+                try {
+                    val inputStream = requireContext().assets.open(recipe.imageUrl)
+                    val drawable = Drawable.createFromStream(inputStream, null)
+                    binding.ivRecipeHeader.setImageDrawable(drawable)
+                } catch (e: IOException) {
+                    Log.e("RecipeFragment", "Error loading recipe image: ${recipe.imageUrl}", e)
+                }
+
+                ingredientsAdapter = IngredientsAdapter(recipe.ingredients)
+                binding.rvIngredients.adapter = ingredientsAdapter
+
+                val methodAdapter = MethodAdapter(recipe.method)
+                binding.rvMethod.adapter = methodAdapter
+
+                addDividers()
+            }
+
+            updateFavoriteIcon(state.isFavorite)
+            binding.tvPortionsCount.text = state.portionCount.toString()
         }
     }
 
-    private fun initRecyclers() {
-        ingredientsAdapter = IngredientsAdapter(recipe.ingredients)
-
-        binding.rvIngredients.layoutManager = LinearLayoutManager(context)
-
-        binding.rvIngredients.adapter = ingredientsAdapter
-
-        binding.rvMethod.layoutManager = LinearLayoutManager(context)
-        val methodAdapter = MethodAdapter(recipe.method)
-        binding.rvMethod.adapter = methodAdapter
-
-        addDividers()
-    }
-
     private fun addDividers() {
+        binding.rvIngredients.itemDecorationCount.let { count ->
+            for (i in count - 1 downTo 0) {
+                binding.rvIngredients.removeItemDecorationAt(i)
+            }
+        }
+
+        binding.rvMethod.itemDecorationCount.let { count ->
+            for (i in count - 1 downTo 0) {
+                binding.rvMethod.removeItemDecorationAt(i)
+            }
+        }
+
         val context = requireContext()
 
         val ingredientsDivider =
@@ -183,8 +169,6 @@ class RecipeFragment : Fragment() {
             }
         binding.rvMethod.addItemDecoration(methodDivider)
     }
-
-    private fun getRecipeFromArguments(): Recipe? = arguments?.getParcelable(ARG_RECIPE)
 
     override fun onDestroyView() {
         super.onDestroyView()
