@@ -28,6 +28,7 @@ import java.io.IOException
 @Suppress("DEPRECATION")
 class RecipeFragment : Fragment() {
     private lateinit var ingredientsAdapter: IngredientsAdapter
+    private lateinit var methodAdapter: MethodAdapter
     private var _binding: FragmentRecipeBinding? = null
     private val binding
         get() =
@@ -57,11 +58,11 @@ class RecipeFragment : Fragment() {
         val recipeId = arguments?.getInt(ARG_RECIPE_ID, -1) ?: -1
         if (recipeId == -1) return
 
-        ingredientsAdapter = IngredientsAdapter(emptyList())
+        ingredientsAdapter = IngredientsAdapter(emptyList(), 1)
         binding.rvIngredients.layoutManager = LinearLayoutManager(context)
         binding.rvIngredients.adapter = ingredientsAdapter
 
-        val methodAdapter = MethodAdapter(emptyList())
+        methodAdapter = MethodAdapter(emptyList())
         binding.rvMethod.layoutManager = LinearLayoutManager(context)
         binding.rvMethod.adapter = methodAdapter
 
@@ -96,6 +97,9 @@ class RecipeFragment : Fragment() {
                     progress: Int,
                     fromUser: Boolean,
                 ) {
+                    if (fromUser) {
+                        viewModel.updatePortionCount(progress) // Передаём значение во ViewModel
+                    }
                     val portions = progress
                     binding.tvPortionsCount.text = portions.toString()
                     ingredientsAdapter.updateIngredients(portions)
@@ -111,22 +115,13 @@ class RecipeFragment : Fragment() {
     private fun initUI() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
             state.recipe?.let { recipe ->
+                ingredientsAdapter.updateData(recipe.ingredients, state.portionCount)
                 this.recipe = recipe
                 binding.tvRecipeName.text = recipe.title
                 binding.ivRecipeHeader.setImageDrawable(state.recipeImage)
-                try {
-                    val inputStream = requireContext().assets.open(recipe.imageUrl)
-                    val drawable = Drawable.createFromStream(inputStream, null)
-                    binding.ivRecipeHeader.setImageDrawable(drawable)
-                } catch (e: IOException) {
-                    Log.e("RecipeFragment", "Error loading recipe image: ${recipe.imageUrl}", e)
-                }
 
-                ingredientsAdapter = IngredientsAdapter(recipe.ingredients)
-                binding.rvIngredients.adapter = ingredientsAdapter
-
-                val methodAdapter = MethodAdapter(recipe.method)
-                binding.rvMethod.adapter = methodAdapter
+                ingredientsAdapter.updateData(recipe.ingredients, state.portionCount)
+                methodAdapter.updateSteps(recipe.method)
 
                 addDividers()
             }

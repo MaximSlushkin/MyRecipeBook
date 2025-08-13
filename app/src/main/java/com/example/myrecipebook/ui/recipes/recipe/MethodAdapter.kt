@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myrecipebook.databinding.ItemMethodBinding
 
 class MethodAdapter(
-    private val steps: List<String>,
+    private var steps: List<String>,
 ) : RecyclerView.Adapter<MethodAdapter.ViewHolder>() {
     inner class ViewHolder(
         private val binding: ItemMethodBinding,
@@ -33,6 +33,11 @@ class MethodAdapter(
         position: Int,
     ) {
         holder.bind(steps[position], position)
+    }
+
+    fun updateSteps(newSteps: List<String>) {
+        steps = newSteps
+        notifyDataSetChanged()
     }
 
     override fun getItemCount() = steps.size

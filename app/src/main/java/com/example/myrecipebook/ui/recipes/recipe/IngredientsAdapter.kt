@@ -9,9 +9,17 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 
 class IngredientsAdapter(
-    private val ingredients: List<Ingredient>,
+    private var ingredients: List<Ingredient>,
+    private var portionCount: Int,
 ) : RecyclerView.Adapter<IngredientsAdapter.ViewHolder>() {
-    private var portionCount: Int = 1
+    fun updateData(
+        newIngredients: List<Ingredient>,
+        newPortionCount: Int,
+    ) {
+        ingredients = newIngredients
+        portionCount = newPortionCount
+        notifyDataSetChanged()
+    }
 
     fun updateIngredients(progress: Int) {
         portionCount = progress
