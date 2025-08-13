@@ -76,7 +76,7 @@ class RecipeViewModel(
 
     fun loadRecipe(recipeId: Int) {
         _state.value = _state.value?.copy(isLoading = true) ?: RecipeState(isLoading = true)
-        // TODO: 'Load from network'
+        // TODO: 'Load from network.'
         val recipe = STUB.getRecipeById(recipeId)
 
         if (recipe != null) {
