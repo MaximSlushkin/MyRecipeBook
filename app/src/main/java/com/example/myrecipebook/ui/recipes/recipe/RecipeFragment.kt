@@ -113,7 +113,7 @@ class RecipeFragment : Fragment() {
             state.recipe?.let { recipe ->
                 this.recipe = recipe
                 binding.tvRecipeName.text = recipe.title
-
+                binding.ivRecipeHeader.setImageDrawable(state.recipeImage)
                 try {
                     val inputStream = requireContext().assets.open(recipe.imageUrl)
                     val drawable = Drawable.createFromStream(inputStream, null)
