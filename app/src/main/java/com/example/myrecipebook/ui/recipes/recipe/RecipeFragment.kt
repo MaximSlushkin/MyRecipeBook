@@ -102,7 +102,6 @@ class RecipeFragment : Fragment() {
                     }
                     val portions = progress
                     binding.tvPortionsCount.text = portions.toString()
-                    ingredientsAdapter.updateIngredients(portions)
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {}
@@ -120,7 +119,6 @@ class RecipeFragment : Fragment() {
                 binding.tvRecipeName.text = recipe.title
                 binding.ivRecipeHeader.setImageDrawable(state.recipeImage)
 
-                ingredientsAdapter.updateData(recipe.ingredients, state.portionCount)
                 methodAdapter.updateSteps(recipe.method)
 
                 addDividers()
