@@ -6,22 +6,29 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myrecipebook.databinding.ItemMethodBinding
 
 class MethodAdapter(
-    private var steps: List<String>,
+    initialSteps: List<String>
 ) : RecyclerView.Adapter<MethodAdapter.ViewHolder>() {
+
+    var steps: List<String> = initialSteps
+        private set
+
+    fun updateSteps(newSteps: List<String>) {
+        steps = newSteps
+        notifyDataSetChanged()
+    }
+
     inner class ViewHolder(
-        private val binding: ItemMethodBinding,
+        private val binding: ItemMethodBinding
     ) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(
-            step: String,
-            position: Int,
-        ) {
+
+        fun bind(step: String, position: Int) {
             binding.tvStep.text = "${position + 1}. $step"
         }
     }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
-        viewType: Int,
+        viewType: Int
     ): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ItemMethodBinding.inflate(inflater, parent, false)
@@ -30,14 +37,9 @@ class MethodAdapter(
 
     override fun onBindViewHolder(
         holder: ViewHolder,
-        position: Int,
+        position: Int
     ) {
         holder.bind(steps[position], position)
-    }
-
-    fun updateSteps(newSteps: List<String>) {
-        steps = newSteps
-        notifyDataSetChanged()
     }
 
     override fun getItemCount() = steps.size

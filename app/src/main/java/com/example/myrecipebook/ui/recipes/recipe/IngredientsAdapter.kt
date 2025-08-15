@@ -9,44 +9,50 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 
 class IngredientsAdapter(
-    private var ingredients: List<Ingredient>,
-    private var portionCount: Int,
+    initialIngredients: List<Ingredient>,
+    initialPortionCount: Int
 ) : RecyclerView.Adapter<IngredientsAdapter.ViewHolder>() {
+
+    var ingredients: List<Ingredient> = initialIngredients
+        private set
+
+    var portionCount: Int = initialPortionCount
+        private set
+
     fun updateData(
         newIngredients: List<Ingredient>,
-        newPortionCount: Int,
+        newPortionCount: Int
     ) {
         ingredients = newIngredients
         portionCount = newPortionCount
         notifyDataSetChanged()
     }
 
-    fun updateIngredients(progress: Int) {
-        portionCount = progress
-        notifyDataSetChanged()
-    }
-
     inner class ViewHolder(
-        private val binding: ItemIngredientBinding,
+        private val binding: ItemIngredientBinding
     ) : RecyclerView.ViewHolder(binding.root) {
+
         fun bind(ingredient: Ingredient) {
-            val formattedQuantity =
-                runCatching {
-                    BigDecimal(ingredient.quantity.replace(",", "."))
-                }.getOrDefault(BigDecimal.ZERO)
+            val formattedQuantity = formatQuantity(ingredient.quantity)
+            binding.tvQuantityWithUnit.text = "$formattedQuantity ${ingredient.unitOfMeasure}"
+            binding.tvDescription.text = ingredient.description
+        }
+
+        private fun formatQuantity(quantity: String): String {
+            return runCatching {
+                BigDecimal(quantity.replace(",", "."))
                     .multiply(BigDecimal(portionCount))
                     .setScale(1, RoundingMode.HALF_UP)
                     .stripTrailingZeros()
                     .toPlainString()
-
-            binding.tvQuantityWithUnit.text = "$formattedQuantity ${ingredient.unitOfMeasure}"
-            binding.tvDescription.text = ingredient.description
+            }.getOrDefault(BigDecimal.ZERO)
+                .toString()
         }
     }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
-        viewType: Int,
+        viewType: Int
     ): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ItemIngredientBinding.inflate(inflater, parent, false)
@@ -55,7 +61,7 @@ class IngredientsAdapter(
 
     override fun onBindViewHolder(
         holder: ViewHolder,
-        position: Int,
+        position: Int
     ) {
         holder.bind(ingredients[position])
     }
