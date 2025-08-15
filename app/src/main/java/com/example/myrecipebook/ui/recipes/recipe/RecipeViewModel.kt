@@ -69,15 +69,19 @@ class RecipeViewModel(
         return HashSet(favorites)
     }
 
+    fun updatePortionCount(newPortionCount: Int) {
+        val currentState = _state.value ?: return
+        _state.value = currentState.copy(portionCount = newPortionCount)
+    }
+
     fun loadRecipe(recipeId: Int) {
         _state.value = _state.value?.copy(isLoading = true) ?: RecipeState(isLoading = true)
-        // TODO: 'Load from network'
+        // TODO: 'Load from network.'
         val recipe = STUB.getRecipeById(recipeId)
 
         if (recipe != null) {
             val drawable: Drawable? =
                 try {
-                    // [CHANGED] Загрузка изображения перемещена из фрагмента сюда
                     val inputStream = getApplication<Application>().assets.open(recipe.imageUrl)
                     Drawable.createFromStream(inputStream, null)
                 } catch (e: IOException) {
@@ -117,7 +121,6 @@ class RecipeViewModel(
                     isLoading = false,
                     recipeImage = null,
                 )
-
             updateState(newState)
         }
     }
