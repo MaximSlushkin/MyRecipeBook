@@ -9,7 +9,7 @@ import com.example.myrecipebook.databinding.ItemRecipeBinding
 import com.example.myrecipebook.model.Recipe
 import java.io.IOException
 
-class RecipesListAdapter(private val dataSet: List<Recipe>) :
+class RecipesListAdapter(private var dataSet: List<Recipe>) :
     RecyclerView.Adapter<RecipesListAdapter.ViewHolder>() {
 
     interface OnItemClickListener {
@@ -20,6 +20,11 @@ class RecipesListAdapter(private val dataSet: List<Recipe>) :
 
     fun setOnItemClickListener(listener: OnItemClickListener) {
         itemClickListener = listener
+    }
+
+    fun updateData(newRecipes: List<Recipe>) {
+        dataSet = newRecipes
+        notifyDataSetChanged()
     }
 
     inner class ViewHolder(private val binding: ItemRecipeBinding) :

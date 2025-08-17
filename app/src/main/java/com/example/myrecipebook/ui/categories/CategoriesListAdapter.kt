@@ -9,7 +9,7 @@ import com.example.myrecipebook.databinding.ItemCategoryBinding
 import com.example.myrecipebook.model.Category
 import java.io.IOException
 
-class CategoriesListAdapter(private val dataSet: List<Category>) :
+class CategoriesListAdapter(private var dataSet: List<Category>) :
     RecyclerView.Adapter<CategoriesListAdapter.ViewHolder>() {
 
     interface OnItemClickListener {
@@ -45,6 +45,11 @@ class CategoriesListAdapter(private val dataSet: List<Category>) :
                 itemClickListener?.onItemClick(category.id)
             }
         }
+    }
+
+    fun updateData(newCategories: List<Category>) {
+        dataSet = newCategories
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
