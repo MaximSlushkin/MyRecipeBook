@@ -43,14 +43,15 @@ class FavoritesFragment : Fragment() {
         binding.tvFragmentTitle.text = getString(R.string.title_favorites)
 
         initRecycler()
-        loadHeaderImage()
         observeState()
+        observeHeaderImage()
     }
 
     private fun observeState() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
             state?.let {
                 if (state.isLoading) {
+                    // Handle loading state if needed
                 } else {
                     adapter.updateData(state.recipes)
 
@@ -68,13 +69,9 @@ class FavoritesFragment : Fragment() {
         }
     }
 
-    private fun loadHeaderImage() {
-        try {
-            val inputStream = requireContext().assets.open("bcg_favorites.png")
-            val drawable = Drawable.createFromStream(inputStream, null)
+    private fun observeHeaderImage() {
+        viewModel.headerImage.observe(viewLifecycleOwner) { drawable ->
             binding.ivFavorite.setImageDrawable(drawable)
-        } catch (e: IOException) {
-            Log.e("FavoritesFragment", "Error loading header image", e)
         }
     }
 
