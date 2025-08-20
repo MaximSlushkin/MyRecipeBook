@@ -60,7 +60,8 @@ class CategoriesListFragment : Fragment() {
         categoriesAdapter = CategoriesListAdapter(emptyList())
         binding.rvCategories.adapter = categoriesAdapter
 
-        categoriesAdapter.setOnItemClickListener(object : CategoriesListAdapter.OnItemClickListener {
+        categoriesAdapter.setOnItemClickListener(object :
+            CategoriesListAdapter.OnItemClickListener {
             override fun onItemClick(categoryId: Int) {
                 openRecipesByCategoryId(categoryId)
             }
@@ -68,9 +69,10 @@ class CategoriesListFragment : Fragment() {
     }
 
     private fun openRecipesByCategoryId(categoryId: Int) {
-        val category = STUB.getCategories().find { it.id == categoryId }
-        if (category != null) {
 
+        val category = viewModel.getCategoryById(categoryId)
+
+        if (category != null) {
             val bundle = Bundle().apply {
                 putInt(ARG_CATEGORY_ID, categoryId)
                 putString(ARG_CATEGORY_NAME, category.title)

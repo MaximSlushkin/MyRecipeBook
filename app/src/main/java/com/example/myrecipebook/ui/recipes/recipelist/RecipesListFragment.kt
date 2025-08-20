@@ -42,18 +42,22 @@ class RecipesListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         arguments?.let { bundle ->
+            // Шаг 1: Получаем данные из аргументов
             val categoryId = bundle.getInt(ARG_CATEGORY_ID, -1).takeIf { it != -1 }
             val categoryName = bundle.getString(ARG_CATEGORY_NAME)
             val categoryImageUrl = bundle.getString(ARG_CATEGORY_IMAGE_URL)
 
+            // Шаг 2: Устанавливаем заголовок (можно оставить в UI, так как это простой текст)
             binding.tvCategoryTitle.text = categoryName ?: "Recipes List"
-            setCategoryHeaderImage(categoryImageUrl)
 
-            viewModel.setCategoryId(categoryId)
+            // Шаг 3: Передаем ВСЕ данные категории в ViewModel
+            viewModel.setCategory(categoryId, categoryName, categoryImageUrl)
         }
 
         initRecycler()
         observeState()
+        // Шаг 4: Добавляем наблюдение за изображением заголовка
+        observeHeaderImage()
     }
 
     private fun observeState() {
@@ -62,6 +66,7 @@ class RecipesListFragment : Fragment() {
                 if (state.isLoading) {
                     // Показать загрузку
                 } else {
+                    // Шаг 5: Обновляем адаптер с рецептами
                     adapter.updateData(state.recipes)
 
                     binding.rvRecipes.visibility =
@@ -75,15 +80,11 @@ class RecipesListFragment : Fragment() {
         }
     }
 
-    private fun setCategoryHeaderImage(imageUrl: String?) {
-        try {
-            imageUrl?.let {
-                val inputStream = requireContext().assets.open(it)
-                val drawable = Drawable.createFromStream(inputStream, null)
-                binding.ivCategoryHeader.setImageDrawable(drawable)
-            }
-        } catch (e: IOException) {
-            Log.e("RecipesFragment", "Error loading header image: $imageUrl", e)
+    // Шаг 6: Добавляем метод для наблюдения за изображением заголовка
+    private fun observeHeaderImage() {
+        viewModel.headerImage.observe(viewLifecycleOwner) { drawable ->
+            // Шаг 7: Устанавливаем изображение, когда оно загружено ViewModel
+            binding.ivCategoryHeader.setImageDrawable(drawable)
         }
     }
 

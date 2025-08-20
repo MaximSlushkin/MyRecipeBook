@@ -18,6 +18,11 @@ class CategoriesListViewModel : ViewModel() {
     private val _state = MutableLiveData<CategoriesListState>()
     val state: LiveData<CategoriesListState> = _state
 
+    fun getCategoryById(categoryId: Int): Category? {
+        val currentCategories = _state.value?.categories ?: emptyList()
+        return currentCategories.find { it.id == categoryId }
+    }
+
     init {
         loadCategories()
     }
