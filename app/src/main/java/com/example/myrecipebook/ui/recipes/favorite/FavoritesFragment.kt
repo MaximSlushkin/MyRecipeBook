@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myrecipebook.ARG_RECIPE_ID
 import com.example.myrecipebook.FAVORITES_KEY
@@ -23,10 +24,10 @@ import java.io.IOException
 
 class FavoritesFragment : Fragment() {
     private var _binding: FragmentFavoritesBinding? = null
-    private val binding
-        get() =
-            _binding
-                ?: throw IllegalStateException("Binding for FragmentFavoritesBinding must not be null")
+    private val binding get() = _binding!!
+
+    private val viewModel: FavoritesViewModel by viewModels()
+    private lateinit var adapter: RecipesListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,69 +38,66 @@ class FavoritesFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(
-        view: View,
-        savedInstanceState: Bundle?,
-    ) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.tvFragmentTitle.text = getString(R.string.title_favorites)
+
         initRecycler()
-        loadHeaderImage()
+        observeState()
+        observeHeaderImage()
     }
 
-    private fun loadHeaderImage() {
-        try {
-            val inputStream = requireContext().assets.open("bcg_favorites.png")
-            val drawable = Drawable.createFromStream(inputStream, null)
+    private fun observeState() {
+        viewModel.state.observe(viewLifecycleOwner) { state ->
+            state?.let {
+                if (state.isLoading) {
+                    // Handle loading state if needed
+                } else {
+                    adapter.updateData(state.recipes)
+
+                    binding.rvRecipes.visibility =
+                        if (state.recipes.isEmpty()) View.GONE else View.VISIBLE
+
+                    binding.tvEmptyState.visibility =
+                        if (state.recipes.isEmpty()) View.VISIBLE else View.GONE
+
+                    state.error?.let { error ->
+                        Log.e("FavoritesFragment", "Error loading favorites", error)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun observeHeaderImage() {
+        viewModel.headerImage.observe(viewLifecycleOwner) { drawable ->
             binding.ivFavorite.setImageDrawable(drawable)
-        } catch (e: IOException) {
-            Log.e("FavoritesFragment", "Error loading header image", e)
         }
     }
 
     private fun initRecycler() {
-        val favoritesIds = getFavorites().map { it.toInt() }.toSet()
+        adapter = RecipesListAdapter(emptyList())
+        binding.rvRecipes.layoutManager = LinearLayoutManager(context)
+        binding.rvRecipes.adapter = adapter
 
-        val favoriteRecipes = STUB.getRecipesByIds(favoritesIds)
-
-        if (favoriteRecipes.isEmpty()) {
-            binding.rvRecipes.visibility = View.GONE
-            binding.tvEmptyState.visibility = View.VISIBLE
-        } else {
-            binding.rvRecipes.visibility = View.VISIBLE
-            binding.tvEmptyState.visibility = View.GONE
-
-            val adapter = RecipesListAdapter(favoriteRecipes)
-            binding.rvRecipes.layoutManager = LinearLayoutManager(context)
-            binding.rvRecipes.adapter = adapter
-
-            adapter.setOnItemClickListener(
-                object : RecipesListAdapter.OnItemClickListener {
-                    override fun onItemClick(recipeId: Int) {
-                        openRecipeByRecipeId(recipeId)
-                    }
-                },
-            )
-        }
-    }
-
-    private fun getFavorites(): Set<String> {
-        val sharedPref = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        return sharedPref.getStringSet(FAVORITES_KEY, null) ?: setOf()
+        adapter.setOnItemClickListener(
+            object : RecipesListAdapter.OnItemClickListener {
+                override fun onItemClick(recipeId: Int) {
+                    openRecipeByRecipeId(recipeId)
+                }
+            }
+        )
     }
 
     private fun openRecipeByRecipeId(recipeId: Int) {
-        STUB.getRecipeById(recipeId)?.let { recipe ->
-            val bundle =
-                Bundle().apply {
-                    putInt(ARG_RECIPE_ID, recipe.id)
-                }
+        val bundle = Bundle().apply {
+            putInt(ARG_RECIPE_ID, recipeId)
+        }
 
-            parentFragmentManager.commit {
-                setReorderingAllowed(true)
-                replace<RecipeFragment>(R.id.mainContainer, args = bundle)
-                addToBackStack(null)
-            }
+        parentFragmentManager.commit {
+            setReorderingAllowed(true)
+            replace<RecipeFragment>(R.id.mainContainer, args = bundle)
+            addToBackStack(null)
         }
     }
 

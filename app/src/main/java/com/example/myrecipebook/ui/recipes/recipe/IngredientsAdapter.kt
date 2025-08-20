@@ -14,10 +14,8 @@ class IngredientsAdapter(
 ) : RecyclerView.Adapter<IngredientsAdapter.ViewHolder>() {
 
     var ingredients: List<Ingredient> = initialIngredients
-        private set
 
     var portionCount: Int = initialPortionCount
-        private set
 
     fun updateData(
         newIngredients: List<Ingredient>,
