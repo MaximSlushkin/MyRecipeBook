@@ -21,6 +21,7 @@ import com.example.myrecipebook.databinding.FragmentFavoritesBinding
 import com.example.myrecipebook.ui.recipes.recipe.RecipeFragment
 import com.example.myrecipebook.ui.recipes.recipelist.RecipesListAdapter
 import java.io.IOException
+import androidx.navigation.fragment.findNavController
 
 class FavoritesFragment : Fragment() {
     private var _binding: FragmentFavoritesBinding? = null
@@ -51,7 +52,7 @@ class FavoritesFragment : Fragment() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
             state?.let {
                 if (state.isLoading) {
-                    // Handle loading state if needed
+
                 } else {
                     adapter.updateData(state.recipes)
 
@@ -94,11 +95,7 @@ class FavoritesFragment : Fragment() {
             putInt(ARG_RECIPE_ID, recipeId)
         }
 
-        parentFragmentManager.commit {
-            setReorderingAllowed(true)
-            replace<RecipeFragment>(R.id.mainContainer, args = bundle)
-            addToBackStack(null)
-        }
+        findNavController().navigate(R.id.recipeFragment, bundle)
     }
 
     override fun onDestroyView() {

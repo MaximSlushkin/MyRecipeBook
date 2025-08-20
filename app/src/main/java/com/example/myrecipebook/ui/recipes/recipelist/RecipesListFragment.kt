@@ -21,6 +21,7 @@ import com.example.myrecipebook.databinding.FragmentRecipesListBinding
 import com.example.myrecipebook.model.Recipe
 import com.example.myrecipebook.ui.recipes.recipe.RecipeFragment
 import java.io.IOException
+import androidx.navigation.fragment.findNavController
 
 class RecipesListFragment : Fragment() {
     private var _binding: FragmentRecipesListBinding? = null
@@ -42,21 +43,18 @@ class RecipesListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         arguments?.let { bundle ->
-            // Шаг 1: Получаем данные из аргументов
+
             val categoryId = bundle.getInt(ARG_CATEGORY_ID, -1).takeIf { it != -1 }
             val categoryName = bundle.getString(ARG_CATEGORY_NAME)
             val categoryImageUrl = bundle.getString(ARG_CATEGORY_IMAGE_URL)
 
-            // Шаг 2: Устанавливаем заголовок (можно оставить в UI, так как это простой текст)
             binding.tvCategoryTitle.text = categoryName ?: "Recipes List"
 
-            // Шаг 3: Передаем ВСЕ данные категории в ViewModel
             viewModel.setCategory(categoryId, categoryName, categoryImageUrl)
         }
 
         initRecycler()
         observeState()
-        // Шаг 4: Добавляем наблюдение за изображением заголовка
         observeHeaderImage()
     }
 
@@ -80,10 +78,8 @@ class RecipesListFragment : Fragment() {
         }
     }
 
-    // Шаг 6: Добавляем метод для наблюдения за изображением заголовка
     private fun observeHeaderImage() {
         viewModel.headerImage.observe(viewLifecycleOwner) { drawable ->
-            // Шаг 7: Устанавливаем изображение, когда оно загружено ViewModel
             binding.ivCategoryHeader.setImageDrawable(drawable)
         }
     }
@@ -109,11 +105,7 @@ class RecipesListFragment : Fragment() {
             putInt(ARG_RECIPE_ID, recipeId)
         }
 
-        parentFragmentManager.commit {
-            setReorderingAllowed(true)
-            replace<RecipeFragment>(R.id.mainContainer, args = bundle)
-            addToBackStack(null)
-        }
+        findNavController().navigate(R.id.recipeFragment, bundle)
     }
 
     override fun onDestroyView() {

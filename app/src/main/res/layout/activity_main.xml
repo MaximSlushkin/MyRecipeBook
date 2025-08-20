@@ -10,12 +10,15 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/mainContainer"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        app:defaultNavHost="true"
         app:layout_constraintBottom_toTopOf="@id/navigationButtonsContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:navGraph="@navigation/nav_graph" />
 
     <LinearLayout
         android:id="@+id/navigationButtonsContainer"
@@ -51,9 +54,9 @@
             android:layout_marginStart="@dimen/half_padding_am"
             android:layout_weight="1"
             android:backgroundTint="@color/button_inactive_color"
-            android:text="@string/title_favorites"
-            android:singleLine="true"
             android:ellipsize="none"
+            android:singleLine="true"
+            android:text="@string/title_favorites"
             android:textColor="@color/white"
             app:icon="@drawable/ic_heart_empty"
             app:iconGravity="textEnd"

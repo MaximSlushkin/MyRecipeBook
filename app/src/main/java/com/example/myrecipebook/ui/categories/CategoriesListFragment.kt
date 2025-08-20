@@ -16,6 +16,7 @@ import com.example.myrecipebook.R
 import com.example.myrecipebook.ui.recipes.recipelist.RecipesListFragment
 import com.example.myrecipebook.data.STUB
 import com.example.myrecipebook.databinding.FragmentListCategoriesBinding
+import androidx.navigation.fragment.findNavController
 
 class CategoriesListFragment : Fragment() {
 
@@ -79,11 +80,7 @@ class CategoriesListFragment : Fragment() {
                 putString(ARG_CATEGORY_IMAGE_URL, category.imageUrl)
             }
 
-            parentFragmentManager.commit {
-                setReorderingAllowed(true)
-                replace<RecipesListFragment>(R.id.mainContainer, args = bundle)
-                addToBackStack(null)
-            }
+            findNavController().navigate(R.id.recipesListFragment, bundle)
         } else {
             Log.e("CategoriesFragment", "Category with ID $categoryId not found")
         }
