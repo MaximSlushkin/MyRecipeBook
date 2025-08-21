@@ -62,9 +62,7 @@ class RecipesListFragment : Fragment() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
             state?.let {
                 if (state.isLoading) {
-                    // Показать загрузку
                 } else {
-                    // Шаг 5: Обновляем адаптер с рецептами
                     adapter.updateData(state.recipes)
 
                     binding.rvRecipes.visibility =
@@ -101,11 +99,8 @@ class RecipesListFragment : Fragment() {
     private fun openRecipeByRecipeId(recipeId: Int) {
         Log.d("RecipesFragment", "Opening recipe ID: $recipeId")
 
-        val bundle = Bundle().apply {
-            putInt(ARG_RECIPE_ID, recipeId)
-        }
-
-        findNavController().navigate(R.id.recipeFragment, bundle)
+        val action = RecipesListFragmentDirections.actionRecipesListFragmentToRecipeFragment(recipeId)
+        findNavController().navigate(action)
     }
 
     override fun onDestroyView() {
