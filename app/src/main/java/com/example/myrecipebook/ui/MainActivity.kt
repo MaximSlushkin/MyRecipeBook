@@ -8,10 +8,12 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import androidx.navigation.findNavController
 import com.example.myrecipebook.R
 import com.example.myrecipebook.databinding.ActivityMainBinding
 import com.example.myrecipebook.ui.categories.CategoriesListFragment
 import com.example.myrecipebook.ui.recipes.favorite.FavoritesFragment
+import androidx.navigation.fragment.findNavController
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,30 +37,13 @@ class MainActivity : AppCompatActivity() {
             )
             insets
         }
-        if (savedInstanceState == null) {
-            navigateToCategories()
-        }
 
         binding.btnRecipes.setOnClickListener {
-            navigateToCategories()
+            findNavController(R.id.mainContainer).navigate(R.id.categoriesListFragment)
         }
 
         binding.btnFavorites.setOnClickListener {
-            navigateToFavorites()
-        }
-    }
-
-    private fun navigateToCategories() {
-        supportFragmentManager.commit {
-            setReorderingAllowed(true)
-            replace<CategoriesListFragment>(R.id.mainContainer)
-        }
-    }
-
-    private fun navigateToFavorites() {
-        supportFragmentManager.commit {
-            setReorderingAllowed(true)
-            replace<FavoritesFragment>(R.id.mainContainer)
+            findNavController(R.id.mainContainer).navigate(R.id.favoritesFragment)
         }
     }
 

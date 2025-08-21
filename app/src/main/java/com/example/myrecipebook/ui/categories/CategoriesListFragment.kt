@@ -16,6 +16,7 @@ import com.example.myrecipebook.R
 import com.example.myrecipebook.ui.recipes.recipelist.RecipesListFragment
 import com.example.myrecipebook.data.STUB
 import com.example.myrecipebook.databinding.FragmentListCategoriesBinding
+import androidx.navigation.fragment.findNavController
 
 class CategoriesListFragment : Fragment() {
 
@@ -60,7 +61,8 @@ class CategoriesListFragment : Fragment() {
         categoriesAdapter = CategoriesListAdapter(emptyList())
         binding.rvCategories.adapter = categoriesAdapter
 
-        categoriesAdapter.setOnItemClickListener(object : CategoriesListAdapter.OnItemClickListener {
+        categoriesAdapter.setOnItemClickListener(object :
+            CategoriesListAdapter.OnItemClickListener {
             override fun onItemClick(categoryId: Int) {
                 openRecipesByCategoryId(categoryId)
             }
@@ -68,20 +70,17 @@ class CategoriesListFragment : Fragment() {
     }
 
     private fun openRecipesByCategoryId(categoryId: Int) {
-        val category = STUB.getCategories().find { it.id == categoryId }
-        if (category != null) {
 
+        val category = viewModel.getCategoryById(categoryId)
+
+        if (category != null) {
             val bundle = Bundle().apply {
                 putInt(ARG_CATEGORY_ID, categoryId)
                 putString(ARG_CATEGORY_NAME, category.title)
                 putString(ARG_CATEGORY_IMAGE_URL, category.imageUrl)
             }
 
-            parentFragmentManager.commit {
-                setReorderingAllowed(true)
-                replace<RecipesListFragment>(R.id.mainContainer, args = bundle)
-                addToBackStack(null)
-            }
+            findNavController().navigate(R.id.recipesListFragment, bundle)
         } else {
             Log.e("CategoriesFragment", "Category with ID $categoryId not found")
         }

@@ -21,6 +21,7 @@ import com.example.myrecipebook.databinding.FragmentRecipesListBinding
 import com.example.myrecipebook.model.Recipe
 import com.example.myrecipebook.ui.recipes.recipe.RecipeFragment
 import java.io.IOException
+import androidx.navigation.fragment.findNavController
 
 class RecipesListFragment : Fragment() {
     private var _binding: FragmentRecipesListBinding? = null
@@ -42,18 +43,19 @@ class RecipesListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         arguments?.let { bundle ->
+
             val categoryId = bundle.getInt(ARG_CATEGORY_ID, -1).takeIf { it != -1 }
             val categoryName = bundle.getString(ARG_CATEGORY_NAME)
             val categoryImageUrl = bundle.getString(ARG_CATEGORY_IMAGE_URL)
 
             binding.tvCategoryTitle.text = categoryName ?: "Recipes List"
-            setCategoryHeaderImage(categoryImageUrl)
 
-            viewModel.setCategoryId(categoryId)
+            viewModel.setCategory(categoryId, categoryName, categoryImageUrl)
         }
 
         initRecycler()
         observeState()
+        observeHeaderImage()
     }
 
     private fun observeState() {
@@ -62,6 +64,7 @@ class RecipesListFragment : Fragment() {
                 if (state.isLoading) {
                     // Показать загрузку
                 } else {
+                    // Шаг 5: Обновляем адаптер с рецептами
                     adapter.updateData(state.recipes)
 
                     binding.rvRecipes.visibility =
@@ -75,15 +78,9 @@ class RecipesListFragment : Fragment() {
         }
     }
 
-    private fun setCategoryHeaderImage(imageUrl: String?) {
-        try {
-            imageUrl?.let {
-                val inputStream = requireContext().assets.open(it)
-                val drawable = Drawable.createFromStream(inputStream, null)
-                binding.ivCategoryHeader.setImageDrawable(drawable)
-            }
-        } catch (e: IOException) {
-            Log.e("RecipesFragment", "Error loading header image: $imageUrl", e)
+    private fun observeHeaderImage() {
+        viewModel.headerImage.observe(viewLifecycleOwner) { drawable ->
+            binding.ivCategoryHeader.setImageDrawable(drawable)
         }
     }
 
@@ -108,11 +105,7 @@ class RecipesListFragment : Fragment() {
             putInt(ARG_RECIPE_ID, recipeId)
         }
 
-        parentFragmentManager.commit {
-            setReorderingAllowed(true)
-            replace<RecipeFragment>(R.id.mainContainer, args = bundle)
-            addToBackStack(null)
-        }
+        findNavController().navigate(R.id.recipeFragment, bundle)
     }
 
     override fun onDestroyView() {
