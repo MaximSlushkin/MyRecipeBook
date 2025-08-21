@@ -14,6 +14,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myrecipebook.ARG_RECIPE_ID
 import com.example.myrecipebook.FAVORITES_KEY
@@ -34,6 +35,8 @@ class RecipeFragment : Fragment() {
     private lateinit var methodAdapter: MethodAdapter
     private val viewModel: RecipeViewModel by viewModels()
 
+    private val args: RecipeFragmentArgs by navArgs()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -46,11 +49,7 @@ class RecipeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val recipeId = arguments?.getInt(ARG_RECIPE_ID, -1) ?: run {
-            Log.e("RecipeFragment", "Invalid recipe ID")
-            requireActivity().onBackPressed()
-            return
-        }
+        val recipeId = args.recipeId
 
         initAdapters()
         initViews()
