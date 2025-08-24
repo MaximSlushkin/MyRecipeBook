@@ -74,15 +74,13 @@ class CategoriesListFragment : Fragment() {
         val category = viewModel.getCategoryById(categoryId)
 
         if (category != null) {
-            val bundle = Bundle().apply {
-                putInt(ARG_CATEGORY_ID, categoryId)
-                putString(ARG_CATEGORY_NAME, category.title)
-                putString(ARG_CATEGORY_IMAGE_URL, category.imageUrl)
-            }
 
-            findNavController().navigate(R.id.recipesListFragment, bundle)
+            val action = CategoriesListFragmentDirections
+                .actionCategoriesListFragmentToRecipesListFragment(category)
+            findNavController().navigate(action)
         } else {
-            Log.e("CategoriesFragment", "Category with ID $categoryId not found")
+
+            throw IllegalArgumentException("Category with ID $categoryId not found")
         }
     }
 }

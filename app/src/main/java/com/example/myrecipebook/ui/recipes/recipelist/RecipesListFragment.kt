@@ -22,6 +22,7 @@ import com.example.myrecipebook.model.Recipe
 import com.example.myrecipebook.ui.recipes.recipe.RecipeFragment
 import java.io.IOException
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 
 class RecipesListFragment : Fragment() {
     private var _binding: FragmentRecipesListBinding? = null
@@ -29,6 +30,8 @@ class RecipesListFragment : Fragment() {
 
     private val viewModel: RecipesListViewModel by viewModels()
     private lateinit var adapter: RecipesListAdapter
+
+    private val args: RecipesListFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,16 +45,11 @@ class RecipesListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        arguments?.let { bundle ->
+        val category = args.category
 
-            val categoryId = bundle.getInt(ARG_CATEGORY_ID, -1).takeIf { it != -1 }
-            val categoryName = bundle.getString(ARG_CATEGORY_NAME)
-            val categoryImageUrl = bundle.getString(ARG_CATEGORY_IMAGE_URL)
+        binding.tvCategoryTitle.text = category.title
 
-            binding.tvCategoryTitle.text = categoryName ?: "Recipes List"
-
-            viewModel.setCategory(categoryId, categoryName, categoryImageUrl)
-        }
+        viewModel.setCategory(category.id, category.title, category.imageUrl)
 
         initRecycler()
         observeState()
