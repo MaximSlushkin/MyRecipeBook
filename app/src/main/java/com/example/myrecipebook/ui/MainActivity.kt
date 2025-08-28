@@ -1,6 +1,8 @@
 package com.example.myrecipebook.ui
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -12,11 +14,12 @@ import com.example.myrecipebook.databinding.ActivityMainBinding
 import com.example.myrecipebook.model.Category
 import com.example.myrecipebook.model.Recipe
 import kotlinx.serialization.json.Json
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URL
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.logging.HttpLoggingInterceptor
+import java.io.IOException
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,6 +30,20 @@ class MainActivity : AppCompatActivity() {
 
     private val threadPool = Executors.newFixedThreadPool(10)
 
+    private val okHttpClient: OkHttpClient by lazy {
+
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
+        OkHttpClient.Builder()
+            .connectTimeout(5, TimeUnit.SECONDS)
+            .readTimeout(5, TimeUnit.SECONDS)
+            .writeTimeout(5, TimeUnit.SECONDS)
+            .addInterceptor(loggingInterceptor)
+            .build()
+    }
+
     private val json = Json {
         ignoreUnknownKeys = true
         isLenient = true
@@ -36,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val mainThreadName = Thread.currentThread().name
-        println("Метод onCreate() выполняется на потоке: $mainThreadName")
+        Log.d(TAG, "Метод onCreate() выполняется на потоке: $mainThreadName")
 
         enableEdgeToEdge()
 
@@ -60,195 +77,157 @@ class MainActivity : AppCompatActivity() {
             findNavController(R.id.mainContainer).navigate(R.id.favoritesFragment)
         }
 
-        Thread {
-            try {
-                val threadName = Thread.currentThread().name
-                println("Выполняю запрос категорий на потоке: $threadName")
+        threadPool.execute {
+            extractCategories()
+        }
+    }
 
-                val url = URL("https://recipes.androidsprint.ru/api/category")
-                val connection = url.openConnection() as HttpURLConnection
+    private fun extractCategories() {
+        val threadName = Thread.currentThread().name
+        Log.d(TAG, "Выполняю запрос категорий на потоке: $threadName")
+
+        val request = Request.Builder()
+            .url("https://recipes.androidsprint.ru/api/category")
+            .get()
+            .addHeader("Accept", "application/json")
+            .addHeader("Content-Type", "application/json")
+            .build()
+
+        try {
+
+            val response = okHttpClient.newCall(request).execute()
+
+            if (response.isSuccessful) {
+
+                val responseBody = response.body.string()
+                Log.d(TAG, "Successful API Response:")
+                Log.d(TAG, responseBody)
 
                 try {
-                    connection.requestMethod = "GET"
-                    connection.connectTimeout = 5000
-                    connection.readTimeout = 5000
-                    connection.setRequestProperty("Accept", "application/json")
-                    connection.setRequestProperty("Content-Type", "application/json")
-                    connection.connect()
+                    val categories = json.decodeFromString<List<Category>>(responseBody)
 
-                    val responseCode = connection.responseCode
-                    println("Response Code: $responseCode")
+                    Log.d(TAG, "Десериализация успешна!")
+                    Log.d(TAG, "Получено категорий: ${categories.size}")
 
-                    if (responseCode == HttpURLConnection.HTTP_OK) {
-                        val inputStream = connection.inputStream
-                        val reader = BufferedReader(InputStreamReader(inputStream))
-                        val response = StringBuilder()
-                        var line: String?
-
-                        while (reader.readLine().also { line = it } != null) {
-                            response.append(line)
-                        }
-                        reader.close()
-
-                        println("Successful API Response:")
-                        println(response.toString())
-
-                        try {
-                            val categories =
-                                json.decodeFromString<List<Category>>(response.toString())
-                            println("Десериализация успешна!")
-                            println("Получено категорий: ${categories.size}")
-
-                            println("\nСПИСОК КАТЕГОРИЙ")
-                            categories.forEachIndexed { index, category ->
-                                println("Категория ${index + 1}:")
-                                println("  ID: ${category.id}")
-                                println("  Название: ${category.title}")
-                                println("  Описание: ${category.description}")
-                                println("  URL изображения: ${category.imageUrl}")
-                                println()
-                            }
-
-                            val categoryIds = categories.map { it.id }
-                            println("ID категорий для запроса рецептов: $categoryIds")
-
-                            categories.forEach { category ->
-                                threadPool.execute {
-                                    extractRecipesCategory(category.id, category.title)
-                                }
-                            }
-
-                            println("Все запросы рецептов отправлены в пул потоков")
-
-                        } catch (e: Exception) {
-                            println("Ошибка десериализации: ${e.message}")
-                            e.printStackTrace()
-                        }
-
-                    } else {
-                        val errorStream = connection.errorStream
-                        if (errorStream != null) {
-                            val errorReader = BufferedReader(InputStreamReader(errorStream))
-                            val errorResponse = StringBuilder()
-                            var errorLine: String?
-
-                            while (errorReader.readLine().also { errorLine = it } != null) {
-                                errorResponse.append(errorLine)
-                            }
-                            errorReader.close()
-                            println("Error Response: $errorResponse")
-                        }
-                        println("Error Code: $responseCode")
+                    Log.d(TAG, "\nСПИСОК КАТЕГОРИЙ")
+                    categories.forEachIndexed { index, category ->
+                        Log.d(TAG, "Категория ${index + 1}:")
+                        Log.d(TAG, "  ID: ${category.id}")
+                        Log.d(TAG, "  Название: ${category.title}")
+                        Log.d(TAG, "  Описание: ${category.description}")
+                        Log.d(TAG, "  URL изображения: ${category.imageUrl}")
+                        Log.d(TAG, "")
                     }
 
-                } finally {
-                    connection.disconnect()
-                }
+                    val categoryIds = categories.map { it.id }
+                    Log.d(TAG, "ID категорий для запроса рецептов: $categoryIds")
 
-            } catch (e: Exception) {
-                println("Network request failed: ${e.message}")
-                e.printStackTrace()
+                    categories.forEach { category ->
+                        threadPool.execute {
+                            extractRecipesCategory(category.id, category.title)
+                        }
+                    }
+
+                    Log.d(TAG, "Все запросы рецептов отправлены в пул потоков")
+
+                } catch (e: Exception) {
+                    Log.e(TAG, "Ошибка десериализации: ${e.message}")
+                    e.printStackTrace()
+                }
+            } else {
+                Log.e(TAG, "Error Code: ${response.code}")
+                Log.e(TAG, "Error Message: ${response.message}")
+
+                val errorBody = response.body.string()
+                Log.e(TAG, "Error Response: $errorBody")
             }
-        }.start()
+
+        } catch (e: IOException) {
+            Log.e(TAG, "Network request failed: ${e.message}")
+            e.printStackTrace()
+        } catch (e: Exception) {
+            Log.e(TAG, "Unexpected error: ${e.message}")
+            e.printStackTrace()
+        }
     }
 
     private fun extractRecipesCategory(categoryId: Int, categoryTitle: String) {
         val threadName = Thread.currentThread().name
-        println("\nЗАПРОС РЕЦЕПТОВ ДЛЯ КАТЕГОРИИ: $categoryTitle (ID: $categoryId)")
-        println("Выполняется на потоке: $threadName")
+        Log.d(TAG, "ЗАПРОС РЕЦЕПТОВ ДЛЯ КАТЕГОРИИ: $categoryTitle (ID: $categoryId)")
+        Log.d(TAG, "Выполняется на потоке: $threadName")
+
+        // Создаем запрос
+        val request = Request.Builder()
+            .url("https://recipes.androidsprint.ru/api/category/${categoryId}/recipes")
+            .get()
+            .addHeader("Accept", "application/json")
+            .addHeader("Content-Type", "application/json")
+            .build()
 
         try {
-            val url = URL("https://recipes.androidsprint.ru/api/category/${categoryId}/recipes")
-            val connection = url.openConnection() as HttpURLConnection
 
-            try {
-                connection.requestMethod = "GET"
-                connection.connectTimeout = 5000
-                connection.readTimeout = 5000
-                connection.setRequestProperty("Accept", "application/json")
-                connection.setRequestProperty("Content-Type", "application/json")
-                connection.connect()
+            val response = okHttpClient.newCall(request).execute()
 
-                val responseCode = connection.responseCode
-                println("Response Code: $responseCode")
+            if (response.isSuccessful) {
 
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    val inputStream = connection.inputStream
-                    val reader = BufferedReader(InputStreamReader(inputStream))
-                    val response = StringBuilder()
-                    var line: String?
+                val responseBody = response.body.string()
 
-                    while (reader.readLine().also { line = it } != null) {
-                        response.append(line)
-                    }
-                    reader.close()
+                try {
+                    val recipes = json.decodeFromString<List<Recipe>>(responseBody)
 
-                    try {
-                        val recipes = json.decodeFromString<List<Recipe>>(response.toString())
-                        println("ПОЛУЧЕНО РЕЦЕПТОВ: ${recipes.size}")
+                    Log.d(TAG, "ПОЛУЧЕНО РЕЦЕПТОВ: ${recipes.size}")
 
-                        if (recipes.isNotEmpty()) {
-                            println("\nСПИСОК РЕЦЕПТОВ:")
-                            recipes.forEachIndexed { index, recipe ->
-                                println("\nРЕЦЕПТ ${index + 1}")
-                                println("ID: ${recipe.id}")
-                                println("Название: ${recipe.title}")
-                                println("URL изображения: ${recipe.imageUrl}")
-                                println("Количество ингредиентов: ${recipe.ingredients.size}")
-                                println("Количество шагов приготовления: ${recipe.method.size}")
+                    if (recipes.isNotEmpty()) {
+                        Log.d(TAG, "\nСПИСОК РЕЦЕПТОВ:")
+                        recipes.forEachIndexed { index, recipe ->
+                            Log.d(TAG, "\nРЕЦЕПТ ${index + 1}")
+                            Log.d(TAG, "ID: ${recipe.id}")
+                            Log.d(TAG, "Название: ${recipe.title}")
+                            Log.d(TAG, "URL изображения: ${recipe.imageUrl}")
+                            Log.d(TAG, "Количество ингредиентов: ${recipe.ingredients.size}")
+                            Log.d(TAG, "Количество шагов приготовления: ${recipe.method.size}")
 
-                                if (recipe.ingredients.isNotEmpty()) {
-                                    println("Ингредиенты:")
-                                    recipe.ingredients.forEachIndexed { ingIndex, ingredient ->
-                                        println("  ${ingIndex + 1}. ${ingredient.quantity} ${ingredient.unitOfMeasure} ${ingredient.description}")
-                                    }
-                                } else {
-                                    println("Ингредиенты: нет ингредиентов")
+                            if (recipe.ingredients.isNotEmpty()) {
+                                Log.d(TAG, "Ингредиенты:")
+                                recipe.ingredients.forEachIndexed { ingIndex, ingredient ->
+                                    Log.d(
+                                        TAG,
+                                        "  ${ingIndex + 1}. ${ingredient.quantity} ${ingredient.unitOfMeasure} ${ingredient.description}"
+                                    )
                                 }
-
-                                if (recipe.method.isNotEmpty()) {
-                                    println("Шаги приготовления:")
-                                    recipe.method.forEachIndexed { stepIndex, step ->
-                                        println("  ${stepIndex + 1}. $step")
-                                    }
-                                } else {
-                                    println("Шаги приготовления: нет шагов")
-                                }
+                            } else {
+                                Log.d(TAG, "Ингредиенты: нет ингредиентов")
                             }
-                        } else {
-                            println("В этой категории нет рецептов")
-                        }
 
-                    } catch (e: Exception) {
-                        println("Ошибка десериализации рецептов: ${e.message}")
-                        println(response.toString().take(500))
-                        if (response.length > 500) println("...")
+                            if (recipe.method.isNotEmpty()) {
+                                Log.d(TAG, "Шаги приготовления:")
+                                recipe.method.forEachIndexed { stepIndex, step ->
+                                    Log.d(TAG, "  ${stepIndex + 1}. $step")
+                                }
+                            } else {
+                                Log.d(TAG, "Шаги приготовления: нет шагов")
+                            }
+                        }
+                    } else {
+                        Log.d(TAG, "В этой категории нет рецептов")
                     }
 
-                } else {
-                    println("ОШИБКА ДЛЯ КАТЕГОРИИ: $categoryTitle")
-                    println("Код ошибки: $responseCode")
-
-                    val errorStream = connection.errorStream
-                    if (errorStream != null) {
-                        val errorReader = BufferedReader(InputStreamReader(errorStream))
-                        val errorResponse = StringBuilder()
-                        var errorLine: String?
-
-                        while (errorReader.readLine().also { errorLine = it } != null) {
-                            errorResponse.append(errorLine)
-                        }
-                        errorReader.close()
-                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Ошибка десериализации рецептов: ${e.message}")
+                    Log.e(TAG, responseBody.take(500))
+                    if (responseBody.length > 500) Log.e(TAG, "...")
                 }
 
-            } finally {
-                connection.disconnect()
+            } else {
+                Log.e(TAG, "ОШИБКА ДЛЯ КАТЕГОРИИ: $categoryTitle")
+                Log.e(TAG, "Код ошибки: ${response.code}")
+                Log.e(TAG, "Сообщение ошибки: ${response.message}")
+
             }
 
-        } catch (e: Exception) {
-            println("СЕТЕВАЯ ОШИБКА ДЛЯ КАТЕГОРИИ: $categoryTitle")
-            println("Сообщение: ${e.message}")
+        } catch (e: IOException) {
+            Log.e(TAG, "СЕТЕВАЯ ОШИБКА ДЛЯ КАТЕГОРИИ: $categoryTitle")
+            Log.e(TAG, "Сообщение: ${e.message}")
             e.printStackTrace()
         }
     }
