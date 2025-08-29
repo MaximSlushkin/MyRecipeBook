@@ -16,7 +16,6 @@ import com.example.myrecipebook.ARG_RECIPE_ID
 import com.example.myrecipebook.FAVORITES_KEY
 import com.example.myrecipebook.PREFS_NAME
 import com.example.myrecipebook.R
-import com.example.myrecipebook.data.STUB
 import com.example.myrecipebook.databinding.FragmentFavoritesBinding
 import com.example.myrecipebook.ui.recipes.recipe.RecipeFragment
 import com.example.myrecipebook.ui.recipes.recipelist.RecipesListAdapter
@@ -24,8 +23,12 @@ import java.io.IOException
 import androidx.navigation.fragment.findNavController
 
 class FavoritesFragment : Fragment() {
+
     private var _binding: FragmentFavoritesBinding? = null
-    private val binding get() = _binding!!
+    private val binding
+        get() = _binding ?: throw IllegalStateException(
+            "Binding for FragmentFavoritesBinding must not be null."
+        )
 
     private val viewModel: FavoritesViewModel by viewModels()
     private lateinit var adapter: RecipesListAdapter

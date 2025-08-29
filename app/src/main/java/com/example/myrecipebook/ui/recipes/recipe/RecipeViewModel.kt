@@ -4,14 +4,13 @@ import android.app.Application
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.Log
-import androidx.core.content.ContentProviderCompat.requireContext
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.example.myrecipebook.FAVORITES_KEY
 import com.example.myrecipebook.PREFS_NAME
-import com.example.myrecipebook.data.STUB
+import com.example.myrecipebook.data.repository.RecipeRepository
 import com.example.myrecipebook.model.Recipe
 import java.io.IOException
 
@@ -28,6 +27,7 @@ class RecipeViewModel(
     )
 
     private val sharedPref = application.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private val repository = RecipeRepository()
 
     private val _state = MutableLiveData<RecipeState>()
 
@@ -76,12 +76,10 @@ class RecipeViewModel(
 
     fun loadRecipe(recipeId: Int) {
         _state.value = _state.value?.copy(isLoading = true) ?: RecipeState(isLoading = true)
-        // TODO: 'Load from network.'
-        val recipe = STUB.getRecipeById(recipeId)
 
-        if (recipe != null) {
-            val drawable: Drawable? =
-                try {
+        repository.getRecipeById(recipeId) { recipe ->
+            if (recipe != null) {
+                val drawable: Drawable? = try {
                     val inputStream = getApplication<Application>().assets.open(recipe.imageUrl)
                     Drawable.createFromStream(inputStream, null)
                 } catch (e: IOException) {
@@ -89,13 +87,11 @@ class RecipeViewModel(
                     null
                 }
 
-            val favorites = getFavorites()
-            val isFavorite = favorites.contains(recipe.id.toString())
+                val favorites = getFavorites()
+                val isFavorite = favorites.contains(recipe.id.toString())
+                val currentPortionCount = _state.value?.portionCount ?: 1
 
-            val currentPortionCount = _state.value?.portionCount ?: 1
-
-            val newState =
-                _state.value?.copy(
+                val newState = _state.value?.copy(
                     recipe = recipe,
                     isFavorite = isFavorite,
                     portionCount = currentPortionCount,
@@ -109,10 +105,16 @@ class RecipeViewModel(
                     recipeImage = drawable,
                 )
 
-            updateState(newState)
-        } else {
-            val newState =
-                _state.value?.copy(
+                updateState(newState)
+            } else {
+
+                Toast.makeText(
+                    getApplication(),
+                    "Ошибка получения данных",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                val newState = _state.value?.copy(
                     error = Throwable("Recipe not found"),
                     isLoading = false,
                     recipeImage = null,
@@ -121,7 +123,13 @@ class RecipeViewModel(
                     isLoading = false,
                     recipeImage = null,
                 )
-            updateState(newState)
+                updateState(newState)
+            }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        repository.shutdown()
     }
 }

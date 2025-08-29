@@ -4,13 +4,14 @@ import android.app.Application
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.myrecipebook.FAVORITES_KEY
 import com.example.myrecipebook.PREFS_NAME
-import com.example.myrecipebook.data.STUB
+import com.example.myrecipebook.data.repository.RecipeRepository
 import com.example.myrecipebook.model.Recipe
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -29,6 +30,7 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
     val headerImage: LiveData<Drawable?> get() = _headerImage
 
     private val sharedPref = application.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private val repository = RecipeRepository()
 
     init {
         loadFavorites()
@@ -37,24 +39,38 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
 
     private fun loadFavorites() {
         _state.value = FavoritesState(isLoading = true)
-        viewModelScope.launch {
-            try {
-                val favorites = getFavorites()
-                val recipes = STUB.getRecipesByIds(favorites.map { it.toInt() }.toSet())
 
-                _state.postValue(
-                    FavoritesState(
-                        recipes = recipes,
-                        isLoading = false,
+        val favorites = getFavorites()
+        val favoriteIds = favorites.map { it.toInt() }.toSet()
+
+        if (favoriteIds.isEmpty()) {
+            _state.postValue(FavoritesState(recipes = emptyList(), isLoading = false))
+            return
+        }
+
+        repository.getRecipesByIds(favoriteIds) { recipes ->
+            viewModelScope.launch {
+                if (recipes != null) {
+                    _state.postValue(
+                        FavoritesState(
+                            recipes = recipes,
+                            isLoading = false,
+                        )
                     )
-                )
-            } catch (e: Exception) {
-                _state.postValue(
-                    FavoritesState(
-                        error = e,
-                        isLoading = false
+                } else {
+
+                    Toast.makeText(
+                        getApplication(),
+                        "Ошибка получения данных",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    _state.postValue(
+                        FavoritesState(
+                            error = Throwable("Failed to load favorites"),
+                            isLoading = false
+                        )
                     )
-                )
+                }
             }
         }
     }
@@ -74,5 +90,10 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
 
     private fun getFavorites(): Set<String> {
         return sharedPref.getStringSet(FAVORITES_KEY, null) ?: setOf()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        repository.shutdown()
     }
 }

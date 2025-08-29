@@ -14,7 +14,6 @@ import com.example.myrecipebook.ARG_CATEGORY_IMAGE_URL
 import com.example.myrecipebook.ARG_CATEGORY_NAME
 import com.example.myrecipebook.R
 import com.example.myrecipebook.ui.recipes.recipelist.RecipesListFragment
-import com.example.myrecipebook.data.STUB
 import com.example.myrecipebook.databinding.FragmentListCategoriesBinding
 import androidx.navigation.fragment.findNavController
 

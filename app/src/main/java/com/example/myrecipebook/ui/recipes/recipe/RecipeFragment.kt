@@ -28,8 +28,12 @@ import java.io.IOException
 
 @Suppress("DEPRECATION")
 class RecipeFragment : Fragment() {
+
     private var _binding: FragmentRecipeBinding? = null
-    private val binding get() = _binding!!
+    private val binding
+        get() = _binding ?: throw IllegalStateException(
+            "Binding for FragmentRecipeBinding must not be null."
+        )
 
     private lateinit var ingredientsAdapter: IngredientsAdapter
     private lateinit var methodAdapter: MethodAdapter

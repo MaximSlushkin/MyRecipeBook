@@ -16,7 +16,6 @@ import com.example.myrecipebook.ARG_CATEGORY_IMAGE_URL
 import com.example.myrecipebook.ARG_CATEGORY_NAME
 import com.example.myrecipebook.ARG_RECIPE_ID
 import com.example.myrecipebook.R
-import com.example.myrecipebook.data.STUB
 import com.example.myrecipebook.databinding.FragmentRecipesListBinding
 import com.example.myrecipebook.model.Recipe
 import com.example.myrecipebook.ui.recipes.recipe.RecipeFragment
@@ -25,8 +24,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 
 class RecipesListFragment : Fragment() {
+
     private var _binding: FragmentRecipesListBinding? = null
-    private val binding get() = _binding!!
+    private val binding
+        get() = _binding ?: throw IllegalStateException(
+            "Binding for FragmentRecipesListBinding must not be null."
+        )
 
     private val viewModel: RecipesListViewModel by viewModels()
     private lateinit var adapter: RecipesListAdapter
