@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -19,7 +18,7 @@ import java.io.IOException
 data class FavoritesState(
     val recipes: List<Recipe> = emptyList(),
     val isLoading: Boolean = false,
-    val error: Throwable? = null,
+    val isError: Boolean = false
 )
 
 class FavoritesViewModel(application: Application) : AndroidViewModel(application) {
@@ -49,28 +48,10 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
         }
 
         repository.getRecipesByIds(favoriteIds) { recipes ->
-            viewModelScope.launch {
-                if (recipes != null) {
-                    _state.postValue(
-                        FavoritesState(
-                            recipes = recipes,
-                            isLoading = false,
-                        )
-                    )
-                } else {
-
-                    Toast.makeText(
-                        getApplication(),
-                        "Ошибка получения данных",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    _state.postValue(
-                        FavoritesState(
-                            error = Throwable("Failed to load favorites"),
-                            isLoading = false
-                        )
-                    )
-                }
+            if (recipes != null) {
+                _state.postValue(FavoritesState(recipes = recipes, isLoading = false))
+            } else {
+                _state.postValue(FavoritesState(isLoading = false, isError = true))
             }
         }
     }

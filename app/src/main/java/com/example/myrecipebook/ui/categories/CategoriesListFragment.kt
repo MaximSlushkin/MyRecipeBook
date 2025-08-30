@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
@@ -46,10 +47,16 @@ class CategoriesListFragment : Fragment() {
     private fun observeState() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
             state?.let {
-                categoriesAdapter.updateData(it.categories)
+
+                    if (state.isError) {
+                        Toast.makeText(requireContext(), "Ошибка получения данных", Toast.LENGTH_SHORT).show()
+                    } else {
+
+                        categoriesAdapter.updateData(state.categories)
+                    }
+                }
             }
         }
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()

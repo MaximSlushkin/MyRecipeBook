@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -91,11 +92,17 @@ class RecipeFragment : Fragment() {
 
     private fun setupObservers() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
-            state.recipe?.let { recipe ->
-                updateRecipeUI(recipe, state)
+            state?.let {
+                if (state.isError) {
+                    Toast.makeText(requireContext(), "Ошибка получения данных", Toast.LENGTH_SHORT).show()
+                }
+
+                state.recipe?.let { recipe ->
+                    updateRecipeUI(recipe, state)
+                }
+                updateFavoriteIcon(state.isFavorite)
+                updatePortionCountUI(state.portionCount)
             }
-            updateFavoriteIcon(state.isFavorite)
-            updatePortionCountUI(state.portionCount)
         }
     }
 

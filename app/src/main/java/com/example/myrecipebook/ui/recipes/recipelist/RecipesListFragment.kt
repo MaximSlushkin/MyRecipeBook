@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
@@ -62,20 +63,16 @@ class RecipesListFragment : Fragment() {
     private fun observeState() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
             state?.let {
-                if (state.isLoading) {
-                } else {
-                    adapter.updateData(state.recipes)
 
-                    binding.rvRecipes.visibility =
-                        if (state.recipes.isEmpty()) View.GONE else View.VISIBLE
+                    if (state.isError) {
+                        Toast.makeText(requireContext(), "Ошибка получения данных", Toast.LENGTH_SHORT).show()
+                    } else {
 
-                    state.error?.let { error ->
-                        Log.e("RecipesFragment", "Error loading recipes", error)
+                        adapter.updateData(state.recipes)
                     }
                 }
             }
         }
-    }
 
     private fun observeHeaderImage() {
         viewModel.headerImage.observe(viewLifecycleOwner) { drawable ->

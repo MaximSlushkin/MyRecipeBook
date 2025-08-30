@@ -1,19 +1,16 @@
 package com.example.myrecipebook.ui.categories
 
 import android.app.Application
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.example.myrecipebook.data.repository.RecipeRepository
 import com.example.myrecipebook.model.Category
-import kotlinx.coroutines.launch
 
 data class CategoriesListState(
     val categories: List<Category> = emptyList(),
     val isLoading: Boolean = false,
-    val error: Throwable? = null
+    val isError: Boolean = false
 )
 
 class CategoriesListViewModel(application: Application) : AndroidViewModel(application) {
@@ -35,18 +32,10 @@ class CategoriesListViewModel(application: Application) : AndroidViewModel(appli
         _state.value = CategoriesListState(isLoading = true)
 
         repository.getCategories { categories ->
-            viewModelScope.launch {
-                if (categories != null) {
-                    _state.postValue(CategoriesListState(categories = categories))
-                } else {
-
-                    Toast.makeText(
-                        getApplication(),
-                        "Ошибка получения данных",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    _state.postValue(CategoriesListState(error = Throwable("Failed to load categories")))
-                }
+            if (categories != null) {
+                _state.postValue(CategoriesListState(categories = categories))
+            } else {
+                _state.postValue(CategoriesListState(isError = true))
             }
         }
     }

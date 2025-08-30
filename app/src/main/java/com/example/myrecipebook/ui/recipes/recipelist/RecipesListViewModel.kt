@@ -3,7 +3,6 @@ package com.example.myrecipebook.ui.recipes.recipelist
 import android.app.Application
 import android.graphics.drawable.Drawable
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -18,7 +17,7 @@ data class RecipesListState(
     val categoryName: String = "",
     val categoryImageUrl: String? = null,
     val isLoading: Boolean = false,
-    val error: Throwable? = null,
+    val isError: Boolean = false
 )
 
 class RecipesListViewModel(application: Application) : AndroidViewModel(application) {
@@ -53,30 +52,22 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
 
         val categoryId = this.categoryId ?: -1
         repository.getRecipesByCategory(categoryId) { recipes ->
-            viewModelScope.launch {
-                if (recipes != null) {
-                    _state.postValue(
-                        RecipesListState(
-                            recipes = recipes,
-                            categoryName = currentCategoryName,
-                            isLoading = false,
-                        )
+            if (recipes != null) {
+                _state.postValue(
+                    RecipesListState(
+                        recipes = recipes,
+                        categoryName = currentCategoryName,
+                        isLoading = false,
                     )
-                } else {
-
-                    Toast.makeText(
-                        getApplication(),
-                        "Ошибка получения данных",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    _state.postValue(
-                        RecipesListState(
-                            categoryName = currentCategoryName,
-                            error = Throwable("Failed to load recipes"),
-                            isLoading = false
-                        )
+                )
+            } else {
+                _state.postValue(
+                    RecipesListState(
+                        categoryName = currentCategoryName,
+                        isLoading = false,
+                        isError = true
                     )
-                }
+                )
             }
         }
     }

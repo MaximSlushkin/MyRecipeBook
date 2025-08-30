@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -22,7 +21,7 @@ class RecipeViewModel(
         val portionCount: Int = 1,
         val isFavorite: Boolean = false,
         val isLoading: Boolean = false,
-        val error: Throwable? = null,
+        val isError: Boolean = false,
         val recipeImage: Drawable? = null,
     )
 
@@ -35,7 +34,7 @@ class RecipeViewModel(
 
     init {
         Log.i("RecipeViewModel", "ViewModel initialized")
-        _state.value = RecipeState(isFavorite = true)
+        _state.value = RecipeState()
     }
 
     fun updateState(newState: RecipeState) {
@@ -91,13 +90,7 @@ class RecipeViewModel(
                 val isFavorite = favorites.contains(recipe.id.toString())
                 val currentPortionCount = _state.value?.portionCount ?: 1
 
-                val newState = _state.value?.copy(
-                    recipe = recipe,
-                    isFavorite = isFavorite,
-                    portionCount = currentPortionCount,
-                    isLoading = false,
-                    recipeImage = drawable,
-                ) ?: RecipeState(
+                val newState = RecipeState(
                     recipe = recipe,
                     isFavorite = isFavorite,
                     portionCount = currentPortionCount,
@@ -105,25 +98,18 @@ class RecipeViewModel(
                     recipeImage = drawable,
                 )
 
-                updateState(newState)
+                _state.postValue(newState)
             } else {
-
-                Toast.makeText(
-                    getApplication(),
-                    "Ошибка получения данных",
-                    Toast.LENGTH_SHORT
-                ).show()
-
                 val newState = _state.value?.copy(
-                    error = Throwable("Recipe not found"),
                     isLoading = false,
+                    isError = true,
                     recipeImage = null,
                 ) ?: RecipeState(
-                    error = Throwable("Recipe not found"),
                     isLoading = false,
+                    isError = true,
                     recipeImage = null,
                 )
-                updateState(newState)
+                _state.postValue(newState)
             }
         }
     }
