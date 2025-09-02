@@ -1,9 +1,6 @@
 package com.example.myrecipebook.ui.recipes.recipe
 
-import android.content.Context
-import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,21 +8,13 @@ import android.widget.SeekBar
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.myrecipebook.ARG_RECIPE_ID
-import com.example.myrecipebook.FAVORITES_KEY
-import com.example.myrecipebook.PREFS_NAME
+import com.bumptech.glide.Glide
 import com.example.myrecipebook.R
 import com.example.myrecipebook.databinding.FragmentRecipeBinding
 import com.example.myrecipebook.model.Recipe
 import com.google.android.material.divider.MaterialDividerItemDecoration
-import kotlinx.coroutines.launch
-import java.io.IOException
 
 @Suppress("DEPRECATION")
 class RecipeFragment : Fragment() {
@@ -108,7 +97,16 @@ class RecipeFragment : Fragment() {
 
     private fun updateRecipeUI(recipe: Recipe, state: RecipeViewModel.RecipeState) {
         binding.tvRecipeName.text = recipe.title
-        binding.ivRecipeHeader.setImageDrawable(state.recipeImage)
+
+        state.recipeImageUrl?.let { imageUrl ->
+            Glide.with(requireContext())
+                .load(imageUrl)
+                .placeholder(R.drawable.ic_placeholder)
+                .error(R.drawable.ic_error)
+                .override(800, 600)
+                .into(binding.ivRecipeHeader)
+        }
+
         ingredientsAdapter.updateData(recipe.ingredients, state.portionCount)
         methodAdapter.updateSteps(recipe.method)
     }

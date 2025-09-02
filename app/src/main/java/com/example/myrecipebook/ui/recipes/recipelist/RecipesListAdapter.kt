@@ -5,6 +5,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.example.myrecipebook.R
 import com.example.myrecipebook.databinding.ItemRecipeBinding
 import com.example.myrecipebook.model.Recipe
 import java.io.IOException
@@ -33,13 +36,14 @@ class RecipesListAdapter(private var dataSet: List<Recipe>) :
         fun bind(recipe: Recipe) {
             binding.tvRecipeTitle.text = recipe.title
 
-            try {
-                val inputStream = itemView.context.assets.open(recipe.imageUrl)
-                val drawable = Drawable.createFromStream(inputStream, null)
-                binding.ivRecipeImage.setImageDrawable(drawable)
-            } catch (e: IOException) {
-                Log.e("RecipesAdapter", "Error loading image: ${recipe.imageUrl}", e)
-            }
+            val imageUrl = "https://recipes.androidsprint.ru/api/images/${recipe.imageUrl}"
+            Glide.with(itemView.context)
+                .load(imageUrl)
+                .placeholder(R.drawable.ic_placeholder)
+                .error(R.drawable.ic_error)
+                .override(600, 400)
+                .centerCrop()
+                .into(binding.ivRecipeImage)
 
             binding.root.setOnClickListener {
                 itemClickListener?.onItemClick(recipe.id)

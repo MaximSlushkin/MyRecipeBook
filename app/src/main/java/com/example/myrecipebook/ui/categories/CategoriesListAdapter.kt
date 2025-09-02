@@ -5,8 +5,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.example.myrecipebook.R
 import com.example.myrecipebook.databinding.ItemCategoryBinding
+import com.example.myrecipebook.databinding.ItemRecipeBinding
 import com.example.myrecipebook.model.Category
+import com.example.myrecipebook.model.Recipe
 import java.io.IOException
 
 class CategoriesListAdapter(private var dataSet: List<Category>) :
@@ -29,16 +34,18 @@ class CategoriesListAdapter(private var dataSet: List<Category>) :
             binding.tvCategoryTitle.text = category.title
             binding.tvCategoryDescription.text = category.description
 
-            try {
-                val inputStream = itemView.context.assets.open(category.imageUrl)
-                val drawable = Drawable.createFromStream(inputStream, null)
-                binding.ivCategoryImage.setImageDrawable(drawable)
-            } catch (e: IOException) {
-                Log.e(
-                    "CategoriesAdapter",
-                    "Error loading image: ${category.imageUrl}",
-                    e
-                )
+            if (!category.imageUrl.isNullOrEmpty()) {
+                val imageUrl = "https://recipes.androidsprint.ru/api/images/${category.imageUrl}"
+                Glide.with(itemView.context)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.ic_placeholder)
+                    .error(R.drawable.ic_error)
+                    .override(500, 300)
+                    .centerCrop()
+                    .into(binding.ivCategoryImage)
+            } else {
+
+                binding.ivCategoryImage.setImageResource(R.drawable.ic_error)
             }
 
             binding.root.setOnClickListener {

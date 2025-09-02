@@ -23,6 +23,7 @@ import com.example.myrecipebook.ui.recipes.recipe.RecipeFragment
 import java.io.IOException
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
 
 class RecipesListFragment : Fragment() {
 
@@ -75,8 +76,23 @@ class RecipesListFragment : Fragment() {
         }
 
     private fun observeHeaderImage() {
-        viewModel.headerImage.observe(viewLifecycleOwner) { drawable ->
-            binding.ivCategoryHeader.setImageDrawable(drawable)
+        viewModel.state.observe(viewLifecycleOwner) { state ->
+            state?.let {
+                binding.tvCategoryTitle.text = state.categoryName
+
+                state.categoryImageUrl?.let { imageUrl ->
+                    Glide.with(requireContext())
+                        .load(imageUrl)
+                        .placeholder(R.drawable.ic_placeholder)
+                        .error(R.drawable.ic_error)
+                        .override(800, 400)
+                        .centerCrop()
+                        .into(binding.ivCategoryHeader)
+                } ?: run {
+
+                    binding.ivCategoryHeader.setImageResource(R.drawable.ic_error)
+                }
+            }
         }
     }
 
