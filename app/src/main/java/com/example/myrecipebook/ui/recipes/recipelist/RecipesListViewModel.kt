@@ -7,7 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.myrecipebook.data.STUB
+import com.example.myrecipebook.data.repository.RecipeRepository
 import com.example.myrecipebook.model.Recipe
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -17,7 +17,7 @@ data class RecipesListState(
     val categoryName: String = "",
     val categoryImageUrl: String? = null,
     val isLoading: Boolean = false,
-    val error: Throwable? = null,
+    val isError: Boolean = false
 )
 
 class RecipesListViewModel(application: Application) : AndroidViewModel(application) {
@@ -29,6 +29,8 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
 
     private var categoryId: Int? = null
     private var categoryImageUrl: String? = null
+
+    private val repository = RecipeRepository()
 
     fun setCategory(id: Int?, name: String?, imageUrl: String?) {
         categoryId = id
@@ -42,17 +44,15 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     private fun loadRecipes() {
-
         val currentCategoryName = _state.value?.categoryName ?: ""
         _state.value = RecipesListState(
             categoryName = currentCategoryName,
             isLoading = true
         )
 
-        viewModelScope.launch {
-            try {
-                val recipes = STUB.getRecipesByCategoryId(categoryId ?: -1)
-
+        val categoryId = this.categoryId ?: -1
+        repository.getRecipesByCategory(categoryId) { recipes ->
+            if (recipes != null) {
                 _state.postValue(
                     RecipesListState(
                         recipes = recipes,
@@ -60,37 +60,37 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
                         isLoading = false,
                     )
                 )
-            } catch (e: Exception) {
-
+            } else {
                 _state.postValue(
                     RecipesListState(
                         categoryName = currentCategoryName,
-                        error = e,
-                        isLoading = false
+                        isLoading = false,
+                        isError = true
                     )
                 )
             }
         }
     }
 
-
     private fun loadHeaderImage() {
         viewModelScope.launch {
             try {
                 categoryImageUrl?.let { url ->
-
                     val inputStream = getApplication<Application>().assets.open(url)
                     val drawable = Drawable.createFromStream(inputStream, null)
                     _headerImage.postValue(drawable)
                 } ?: run {
-
                     _headerImage.postValue(null)
                 }
             } catch (e: IOException) {
-
                 Log.e("RecipesListViewModel", "Error loading header image: $categoryImageUrl", e)
                 _headerImage.postValue(null)
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        repository.shutdown()
     }
 }

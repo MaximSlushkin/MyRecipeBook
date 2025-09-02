@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
@@ -16,7 +17,6 @@ import com.example.myrecipebook.ARG_CATEGORY_IMAGE_URL
 import com.example.myrecipebook.ARG_CATEGORY_NAME
 import com.example.myrecipebook.ARG_RECIPE_ID
 import com.example.myrecipebook.R
-import com.example.myrecipebook.data.STUB
 import com.example.myrecipebook.databinding.FragmentRecipesListBinding
 import com.example.myrecipebook.model.Recipe
 import com.example.myrecipebook.ui.recipes.recipe.RecipeFragment
@@ -25,8 +25,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 
 class RecipesListFragment : Fragment() {
+
     private var _binding: FragmentRecipesListBinding? = null
-    private val binding get() = _binding!!
+    private val binding
+        get() = _binding ?: throw IllegalStateException(
+            "Binding for FragmentRecipesListBinding must not be null."
+        )
 
     private val viewModel: RecipesListViewModel by viewModels()
     private lateinit var adapter: RecipesListAdapter
@@ -59,20 +63,16 @@ class RecipesListFragment : Fragment() {
     private fun observeState() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
             state?.let {
-                if (state.isLoading) {
-                } else {
-                    adapter.updateData(state.recipes)
 
-                    binding.rvRecipes.visibility =
-                        if (state.recipes.isEmpty()) View.GONE else View.VISIBLE
+                    if (state.isError) {
+                        Toast.makeText(requireContext(), "Ошибка получения данных", Toast.LENGTH_SHORT).show()
+                    } else {
 
-                    state.error?.let { error ->
-                        Log.e("RecipesFragment", "Error loading recipes", error)
+                        adapter.updateData(state.recipes)
                     }
                 }
             }
         }
-    }
 
     private fun observeHeaderImage() {
         viewModel.headerImage.observe(viewLifecycleOwner) { drawable ->

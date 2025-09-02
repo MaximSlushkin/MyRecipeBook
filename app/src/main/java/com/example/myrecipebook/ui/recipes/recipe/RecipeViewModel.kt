@@ -4,14 +4,12 @@ import android.app.Application
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.Log
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.example.myrecipebook.FAVORITES_KEY
 import com.example.myrecipebook.PREFS_NAME
-import com.example.myrecipebook.data.STUB
+import com.example.myrecipebook.data.repository.RecipeRepository
 import com.example.myrecipebook.model.Recipe
 import java.io.IOException
 
@@ -23,11 +21,12 @@ class RecipeViewModel(
         val portionCount: Int = 1,
         val isFavorite: Boolean = false,
         val isLoading: Boolean = false,
-        val error: Throwable? = null,
+        val isError: Boolean = false,
         val recipeImage: Drawable? = null,
     )
 
     private val sharedPref = application.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private val repository = RecipeRepository()
 
     private val _state = MutableLiveData<RecipeState>()
 
@@ -35,7 +34,7 @@ class RecipeViewModel(
 
     init {
         Log.i("RecipeViewModel", "ViewModel initialized")
-        _state.value = RecipeState(isFavorite = true)
+        _state.value = RecipeState()
     }
 
     fun updateState(newState: RecipeState) {
@@ -76,12 +75,10 @@ class RecipeViewModel(
 
     fun loadRecipe(recipeId: Int) {
         _state.value = _state.value?.copy(isLoading = true) ?: RecipeState(isLoading = true)
-        // TODO: 'Load from network.'
-        val recipe = STUB.getRecipeById(recipeId)
 
-        if (recipe != null) {
-            val drawable: Drawable? =
-                try {
+        repository.getRecipeById(recipeId) { recipe ->
+            if (recipe != null) {
+                val drawable: Drawable? = try {
                     val inputStream = getApplication<Application>().assets.open(recipe.imageUrl)
                     Drawable.createFromStream(inputStream, null)
                 } catch (e: IOException) {
@@ -89,19 +86,11 @@ class RecipeViewModel(
                     null
                 }
 
-            val favorites = getFavorites()
-            val isFavorite = favorites.contains(recipe.id.toString())
+                val favorites = getFavorites()
+                val isFavorite = favorites.contains(recipe.id.toString())
+                val currentPortionCount = _state.value?.portionCount ?: 1
 
-            val currentPortionCount = _state.value?.portionCount ?: 1
-
-            val newState =
-                _state.value?.copy(
-                    recipe = recipe,
-                    isFavorite = isFavorite,
-                    portionCount = currentPortionCount,
-                    isLoading = false,
-                    recipeImage = drawable,
-                ) ?: RecipeState(
+                val newState = RecipeState(
                     recipe = recipe,
                     isFavorite = isFavorite,
                     portionCount = currentPortionCount,
@@ -109,19 +98,24 @@ class RecipeViewModel(
                     recipeImage = drawable,
                 )
 
-            updateState(newState)
-        } else {
-            val newState =
-                _state.value?.copy(
-                    error = Throwable("Recipe not found"),
+                _state.postValue(newState)
+            } else {
+                val newState = _state.value?.copy(
                     isLoading = false,
+                    isError = true,
                     recipeImage = null,
                 ) ?: RecipeState(
-                    error = Throwable("Recipe not found"),
                     isLoading = false,
+                    isError = true,
                     recipeImage = null,
                 )
-            updateState(newState)
+                _state.postValue(newState)
+            }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        repository.shutdown()
     }
 }

@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("kotlin-parcelize")
     // Kotlin serialization plugin for type safe routes and navigation arguments
-    kotlin("plugin.serialization") version "2.0.21"
+    kotlin("plugin.serialization")
     id("androidx.navigation.safeargs.kotlin")
 }
 
@@ -30,12 +30,15 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+        }
     }
 
     buildFeatures {
@@ -48,7 +51,6 @@ android {
             }
         }
     }
-
 }
 
 dependencies {
@@ -82,10 +84,13 @@ dependencies {
     // JSON serialization library, works with the Kotlin serialization plugin
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.google.code.gson:gson:2.13.1")
 
     implementation("com.squareup.okhttp3:okhttp:5.1.0")
 
     implementation("com.squareup.okhttp3:logging-interceptor:5.1.0")
 
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
 }
