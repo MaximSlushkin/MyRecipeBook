@@ -7,10 +7,12 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.myrecipebook.FAVORITES_KEY
 import com.example.myrecipebook.PREFS_NAME
 import com.example.myrecipebook.data.repository.RecipeRepository
 import com.example.myrecipebook.model.Recipe
+import kotlinx.coroutines.launch
 import java.io.IOException
 
 class RecipeViewModel(
@@ -76,25 +78,37 @@ class RecipeViewModel(
     fun loadRecipe(recipeId: Int) {
         _state.value = _state.value?.copy(isLoading = true) ?: RecipeState(isLoading = true)
 
-        repository.getRecipeById(recipeId) { recipe ->
-            if (recipe != null) {
+        viewModelScope.launch {
+            try {
+                val recipe = repository.getRecipeById(recipeId)
+                if (recipe != null) {
+                    val imageUrl = "https://recipes.androidsprint.ru/api/images/${recipe.imageUrl}"
+                    val favorites = getFavorites()
+                    val isFavorite = favorites.contains(recipe.id.toString())
+                    val currentPortionCount = _state.value?.portionCount ?: 1
 
-                val imageUrl = "https://recipes.androidsprint.ru/api/images/${recipe.imageUrl}"
+                    val newState = RecipeState(
+                        recipe = recipe,
+                        isFavorite = isFavorite,
+                        portionCount = currentPortionCount,
+                        isLoading = false,
+                        recipeImageUrl = imageUrl,
+                    )
 
-                val favorites = getFavorites()
-                val isFavorite = favorites.contains(recipe.id.toString())
-                val currentPortionCount = _state.value?.portionCount ?: 1
-
-                val newState = RecipeState(
-                    recipe = recipe,
-                    isFavorite = isFavorite,
-                    portionCount = currentPortionCount,
-                    isLoading = false,
-                    recipeImageUrl = imageUrl,
-                )
-
-                _state.postValue(newState)
-            } else {
+                    _state.postValue(newState)
+                } else {
+                    val newState = _state.value?.copy(
+                        isLoading = false,
+                        isError = true,
+                        recipeImageUrl = null,
+                    ) ?: RecipeState(
+                        isLoading = false,
+                        isError = true,
+                        recipeImageUrl = null,
+                    )
+                    _state.postValue(newState)
+                }
+            } catch (e: Exception) {
                 val newState = _state.value?.copy(
                     isLoading = false,
                     isError = true,
@@ -107,10 +121,5 @@ class RecipeViewModel(
                 _state.postValue(newState)
             }
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        repository.shutdown()
     }
 }

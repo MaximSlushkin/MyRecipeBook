@@ -4,8 +4,11 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.myrecipebook.data.repository.RecipeRepository
 import com.example.myrecipebook.model.Recipe
+import kotlinx.coroutines.launch
+
 data class RecipesListState(
     val recipes: List<Recipe> = emptyList(),
     val categoryName: String = "",
@@ -38,8 +41,9 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     private fun loadRecipes(categoryId: Int?, categoryName: String?, categoryImageUrl: String?) {
-        repository.getRecipesByCategory(categoryId ?: -1) { recipes ->
-            if (recipes != null) {
+        viewModelScope.launch {
+            try {
+                val recipes = repository.getRecipesByCategory(categoryId ?: -1)
                 _state.postValue(
                     RecipesListState(
                         recipes = recipes,
@@ -48,7 +52,7 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
                         isLoading = false,
                     )
                 )
-            } else {
+            } catch (e: Exception) {
                 _state.postValue(
                     RecipesListState(
                         categoryName = categoryName ?: "",
@@ -59,10 +63,5 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
                 )
             }
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        repository.shutdown()
     }
 }

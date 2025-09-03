@@ -95,4 +95,8 @@ dependencies {
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
 
     implementation("com.github.bumptech.glide:glide:5.0.4")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
+
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.0")
 }
