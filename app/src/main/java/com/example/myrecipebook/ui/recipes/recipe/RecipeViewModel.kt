@@ -22,7 +22,7 @@ class RecipeViewModel(
         val isFavorite: Boolean = false,
         val isLoading: Boolean = false,
         val isError: Boolean = false,
-        val recipeImage: Drawable? = null,
+        val recipeImageUrl: String? = null,
     )
 
     private val sharedPref = application.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -78,13 +78,8 @@ class RecipeViewModel(
 
         repository.getRecipeById(recipeId) { recipe ->
             if (recipe != null) {
-                val drawable: Drawable? = try {
-                    val inputStream = getApplication<Application>().assets.open(recipe.imageUrl)
-                    Drawable.createFromStream(inputStream, null)
-                } catch (e: IOException) {
-                    Log.e("RecipeViewModel", "Error loading recipe image: ${recipe.imageUrl}", e)
-                    null
-                }
+
+                val imageUrl = "https://recipes.androidsprint.ru/api/images/${recipe.imageUrl}"
 
                 val favorites = getFavorites()
                 val isFavorite = favorites.contains(recipe.id.toString())
@@ -95,7 +90,7 @@ class RecipeViewModel(
                     isFavorite = isFavorite,
                     portionCount = currentPortionCount,
                     isLoading = false,
-                    recipeImage = drawable,
+                    recipeImageUrl = imageUrl,
                 )
 
                 _state.postValue(newState)
@@ -103,11 +98,11 @@ class RecipeViewModel(
                 val newState = _state.value?.copy(
                     isLoading = false,
                     isError = true,
-                    recipeImage = null,
+                    recipeImageUrl = null,
                 ) ?: RecipeState(
                     isLoading = false,
                     isError = true,
-                    recipeImage = null,
+                    recipeImageUrl = null,
                 )
                 _state.postValue(newState)
             }

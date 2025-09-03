@@ -22,6 +22,7 @@ import com.example.myrecipebook.ui.recipes.recipe.RecipeFragment
 import com.example.myrecipebook.ui.recipes.recipelist.RecipesListAdapter
 import java.io.IOException
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 
 class FavoritesFragment : Fragment() {
 
@@ -73,9 +74,10 @@ class FavoritesFragment : Fragment() {
     }
 
     private fun observeHeaderImage() {
-        viewModel.headerImage.observe(viewLifecycleOwner) { drawable ->
-            binding.ivFavorite.setImageDrawable(drawable)
-        }
+
+        Glide.with(requireContext())
+            .load("file:///android_asset/bcg_favorites.png")
+            .into(binding.ivFavorite)
     }
 
     private fun initRecycler() {
