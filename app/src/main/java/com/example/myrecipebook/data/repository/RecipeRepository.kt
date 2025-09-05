@@ -5,13 +5,17 @@ import com.example.myrecipebook.data.network.RecipeApiService
 import com.example.myrecipebook.model.Category
 import com.example.myrecipebook.model.Recipe
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.Response
-import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 class RecipeRepository {
@@ -49,67 +53,67 @@ class RecipeRepository {
         retrofit.create(RecipeApiService::class.java)
     }
 
-    private val executorService = Executors.newFixedThreadPool(4)
+    private val coroutineScope = CoroutineScope(Dispatchers.IO + Job())
 
-    fun getCategories(callback: (List<Category>?) -> Unit) {
-        executorService.execute {
+    suspend fun getCategories(): List<Category> {
+        return withContext(Dispatchers.IO) {
             try {
                 val response: Response<List<Category>> = apiService.getCategories().execute()
                 if (response.isSuccessful) {
                     val categories = response.body() ?: emptyList()
                     Log.d(TAG, "Successfully loaded ${categories.size} categories")
-                    callback(categories)
+                    categories
                 } else {
                     Log.e(TAG, "Error loading categories: ${response.code()} - ${response.message()}")
-                    callback(null)
+                    emptyList()
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Exception loading categories: ${e.message}")
-                callback(null)
+                emptyList()
             }
         }
     }
 
-    fun getRecipesByCategory(categoryId: Int, callback: (List<Recipe>?) -> Unit) {
-        executorService.execute {
+    suspend fun getRecipesByCategory(categoryId: Int): List<Recipe> {
+        return withContext(Dispatchers.IO) {
             try {
                 val response: Response<List<Recipe>> = apiService.getRecipesByCategory(categoryId).execute()
                 if (response.isSuccessful) {
                     val recipes = response.body() ?: emptyList()
                     Log.d(TAG, "Successfully loaded ${recipes.size} recipes for category $categoryId")
-                    callback(recipes)
+                    recipes
                 } else {
                     Log.e(TAG, "Error loading recipes for category $categoryId: ${response.code()} - ${response.message()}")
-                    callback(null)
+                    emptyList()
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Exception loading recipes for category $categoryId: ${e.message}")
-                callback(null)
+                emptyList()
             }
         }
     }
 
-    fun getRecipeById(recipeId: Int, callback: (Recipe?) -> Unit) {
-        executorService.execute {
+    suspend fun getRecipeById(recipeId: Int): Recipe? {
+        return withContext(Dispatchers.IO) {
             try {
                 val response: Response<Recipe> = apiService.getRecipeById(recipeId).execute()
                 if (response.isSuccessful) {
                     val recipe = response.body()
                     Log.d(TAG, "Successfully loaded recipe $recipeId")
-                    callback(recipe)
+                    recipe
                 } else {
                     Log.e(TAG, "Error loading recipe $recipeId: ${response.code()} - ${response.message()}")
-                    callback(null)
+                    null
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Exception loading recipe $recipeId: ${e.message}")
-                callback(null)
+                null
             }
         }
     }
 
-    fun getRecipesByIds(ids: Set<Int>, callback: (List<Recipe>?) -> Unit) {
-        executorService.execute {
+    suspend fun getRecipesByIds(ids: Set<Int>): List<Recipe> {
+        return withContext(Dispatchers.IO) {
             try {
                 val recipes = mutableListOf<Recipe>()
                 ids.forEach { id ->
@@ -119,15 +123,11 @@ class RecipeRepository {
                     }
                 }
                 Log.d(TAG, "Successfully loaded ${recipes.size} recipes from ${ids.size} IDs")
-                callback(recipes)
+                recipes
             } catch (e: Exception) {
                 Log.e(TAG, "Exception loading recipes by IDs: ${e.message}")
-                callback(null)
+                emptyList()
             }
         }
-    }
-
-    fun shutdown() {
-        executorService.shutdown()
     }
 }

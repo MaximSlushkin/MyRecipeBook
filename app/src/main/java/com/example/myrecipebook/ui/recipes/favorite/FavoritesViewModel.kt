@@ -5,10 +5,12 @@ import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.myrecipebook.FAVORITES_KEY
 import com.example.myrecipebook.PREFS_NAME
 import com.example.myrecipebook.data.repository.RecipeRepository
 import com.example.myrecipebook.model.Recipe
+import kotlinx.coroutines.launch
 
 data class FavoritesState(
     val recipes: List<Recipe> = emptyList(),
@@ -30,18 +32,19 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
     private fun loadFavorites() {
         _state.value = FavoritesState(isLoading = true)
 
-        val favorites = getFavorites()
-        val favoriteIds = favorites.map { it.toInt() }.toSet()
+        viewModelScope.launch {
+            try {
+                val favorites = getFavorites()
+                val favoriteIds = favorites.map { it.toInt() }.toSet()
 
-        if (favoriteIds.isEmpty()) {
-            _state.postValue(FavoritesState(recipes = emptyList(), isLoading = false))
-            return
-        }
+                if (favoriteIds.isEmpty()) {
+                    _state.postValue(FavoritesState(recipes = emptyList(), isLoading = false))
+                    return@launch
+                }
 
-        repository.getRecipesByIds(favoriteIds) { recipes ->
-            if (recipes != null) {
+                val recipes = repository.getRecipesByIds(favoriteIds)
                 _state.postValue(FavoritesState(recipes = recipes, isLoading = false))
-            } else {
+            } catch (e: Exception) {
                 _state.postValue(FavoritesState(isLoading = false, isError = true))
             }
         }
@@ -49,10 +52,5 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
 
     private fun getFavorites(): Set<String> {
         return sharedPref.getStringSet(FAVORITES_KEY, null) ?: setOf()
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        repository.shutdown()
     }
 }

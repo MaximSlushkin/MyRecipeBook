@@ -4,8 +4,10 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.myrecipebook.data.repository.RecipeRepository
 import com.example.myrecipebook.model.Category
+import kotlinx.coroutines.launch
 
 data class CategoriesListState(
     val categories: List<Category> = emptyList(),
@@ -31,17 +33,13 @@ class CategoriesListViewModel(application: Application) : AndroidViewModel(appli
     private fun loadCategories() {
         _state.value = CategoriesListState(isLoading = true)
 
-        repository.getCategories { categories ->
-            if (categories != null) {
+        viewModelScope.launch {
+            try {
+                val categories = repository.getCategories()
                 _state.postValue(CategoriesListState(categories = categories))
-            } else {
+            } catch (e: Exception) {
                 _state.postValue(CategoriesListState(isError = true))
             }
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        repository.shutdown()
     }
 }
