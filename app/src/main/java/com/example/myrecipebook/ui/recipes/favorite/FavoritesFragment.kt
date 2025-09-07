@@ -27,10 +27,10 @@ import com.bumptech.glide.Glide
 class FavoritesFragment : Fragment() {
 
     private var _binding: FragmentFavoritesBinding? = null
-    private val binding
-        get() = _binding ?: throw IllegalStateException(
-            "Binding for FragmentFavoritesBinding must not be null."
-        )
+    private val binding: FragmentFavoritesBinding
+        get() = checkNotNull(_binding) {
+            "Binding is null. Fragment may have been destroyed or not initialized properly."
+        }
 
     private val viewModel: FavoritesViewModel by viewModels()
     private lateinit var adapter: RecipesListAdapter
@@ -55,6 +55,7 @@ class FavoritesFragment : Fragment() {
 
     private fun observeState() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
+            if (_binding == null) return@observe
             state?.let {
                 if (state.isError) {
                     Toast.makeText(requireContext(), "Ошибка получения данных", Toast.LENGTH_SHORT).show()
@@ -74,6 +75,8 @@ class FavoritesFragment : Fragment() {
     }
 
     private fun observeHeaderImage() {
+
+        if (_binding == null) return
 
         Glide.with(requireContext())
             .load("file:///android_asset/bcg_favorites.png")
