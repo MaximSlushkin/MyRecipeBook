@@ -1,7 +1,10 @@
 package com.example.myrecipebook.data.repository
 
+import android.content.Context
 import android.util.Log
+import androidx.room.Room
 import com.example.myrecipebook.data.network.RecipeApiService
+import com.example.myrecipebook.data.network.RecipeDatabase
 import com.example.myrecipebook.model.Category
 import com.example.myrecipebook.model.Recipe
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -9,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -18,7 +22,7 @@ import retrofit2.Retrofit
 import retrofit2.Response
 import java.util.concurrent.TimeUnit
 
-class RecipeRepository {
+class RecipeRepository(context: Context) {
 
     private val URL = "https://recipes.androidsprint.ru/api/"
     private val TAG = "RecipeRepository"
@@ -26,6 +30,20 @@ class RecipeRepository {
     private val json = Json {
         ignoreUnknownKeys = true
         isLenient = true
+    }
+
+    private val database: RecipeDatabase by lazy {
+        Room.databaseBuilder(
+            context.applicationContext,
+            RecipeDatabase::class.java,
+            "recipe-database"
+        )
+            .fallbackToDestructiveMigration(true)
+            .build()
+    }
+
+    private val categoriesDao by lazy {
+        database.categoriesDao()
     }
 
     private val okHttpClient: OkHttpClient by lazy {
@@ -55,6 +73,23 @@ class RecipeRepository {
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO + Job())
 
+    fun getCategoriesFromCache(): Flow<List<Category>> {
+        Log.d(TAG, "Getting categories from cache (database)")
+        return categoriesDao.getAllCategories()
+    }
+
+    suspend fun getCategoriesFromCacheOnce(): List<Category> {
+        Log.d(TAG, "Getting categories from cache (database) - one time request")
+        return withContext(Dispatchers.IO) {
+            try {
+                categoriesDao.getAllCategoriesOnce()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error getting categories from cache: ${e.message}")
+                emptyList()
+            }
+        }
+    }
+
     suspend fun getCategories(): List<Category> {
         return withContext(Dispatchers.IO) {
             try {
@@ -62,14 +97,22 @@ class RecipeRepository {
                 if (response.isSuccessful) {
                     val categories = response.body() ?: emptyList()
                     Log.d(TAG, "Successfully loaded ${categories.size} categories")
+
+                    categoriesDao.insertCategories(categories)
+
                     categories
                 } else {
-                    Log.e(TAG, "Error loading categories: ${response.code()} - ${response.message()}")
-                    emptyList()
+                    Log.e(
+                        TAG,
+                        "Error loading categories: ${response.code()} - ${response.message()}"
+                    )
+
+                    categoriesDao.getAllCategoriesOnce()
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Exception loading categories: ${e.message}")
-                emptyList()
+
+                categoriesDao.getAllCategoriesOnce()
             }
         }
     }
@@ -77,13 +120,20 @@ class RecipeRepository {
     suspend fun getRecipesByCategory(categoryId: Int): List<Recipe> {
         return withContext(Dispatchers.IO) {
             try {
-                val response: Response<List<Recipe>> = apiService.getRecipesByCategory(categoryId).execute()
+                val response: Response<List<Recipe>> =
+                    apiService.getRecipesByCategory(categoryId).execute()
                 if (response.isSuccessful) {
                     val recipes = response.body() ?: emptyList()
-                    Log.d(TAG, "Successfully loaded ${recipes.size} recipes for category $categoryId")
+                    Log.d(
+                        TAG,
+                        "Successfully loaded ${recipes.size} recipes for category $categoryId"
+                    )
                     recipes
                 } else {
-                    Log.e(TAG, "Error loading recipes for category $categoryId: ${response.code()} - ${response.message()}")
+                    Log.e(
+                        TAG,
+                        "Error loading recipes for category $categoryId: ${response.code()} - ${response.message()}"
+                    )
                     emptyList()
                 }
             } catch (e: Exception) {
@@ -102,7 +152,10 @@ class RecipeRepository {
                     Log.d(TAG, "Successfully loaded recipe $recipeId")
                     recipe
                 } else {
-                    Log.e(TAG, "Error loading recipe $recipeId: ${response.code()} - ${response.message()}")
+                    Log.e(
+                        TAG,
+                        "Error loading recipe $recipeId: ${response.code()} - ${response.message()}"
+                    )
                     null
                 }
             } catch (e: Exception) {

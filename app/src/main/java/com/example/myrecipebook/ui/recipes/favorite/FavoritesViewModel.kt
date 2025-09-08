@@ -23,7 +23,7 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
     val state: LiveData<FavoritesState> = _state
 
     private val sharedPref = application.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-    private val repository = RecipeRepository()
+    private val repository = RecipeRepository(application)
 
     init {
         loadFavorites()

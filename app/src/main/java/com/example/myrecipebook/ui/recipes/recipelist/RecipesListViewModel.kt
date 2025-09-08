@@ -21,7 +21,7 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
     private val _state = MutableLiveData<RecipesListState>()
     val state: LiveData<RecipesListState> = _state
 
-    private val repository = RecipeRepository()
+    private val repository = RecipeRepository(application)
 
     fun setCategory(id: Int?, name: String?, imageUrl: String?) {
         val fullImageUrl = if (!imageUrl.isNullOrEmpty()) {
