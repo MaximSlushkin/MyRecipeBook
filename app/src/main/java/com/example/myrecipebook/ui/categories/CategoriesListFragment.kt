@@ -24,10 +24,10 @@ class CategoriesListFragment : Fragment() {
     private val viewModel: CategoriesListViewModel by viewModels()
 
     private var _binding: FragmentListCategoriesBinding? = null
-    private val binding
-        get() = _binding ?: throw IllegalStateException(
-            "Binding for FragmentListCategoriesBinding must not be null."
-        )
+    private val binding: FragmentListCategoriesBinding
+        get() = checkNotNull(_binding) {
+            "Binding is null. Fragment may have been destroyed or not initialized properly."
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,21 +42,33 @@ class CategoriesListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initRecycler()
         observeState()
+        observeToastEvents()
     }
 
     private fun observeState() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
+            if (_binding == null) return@observe
             state?.let {
+                if (state.isError) {
 
-                    if (state.isError) {
-                        Toast.makeText(requireContext(), "Ошибка получения данных", Toast.LENGTH_SHORT).show()
-                    } else {
-
-                        categoriesAdapter.updateData(state.categories)
-                    }
+                    categoriesAdapter.updateData(emptyList())
+                } else {
+                    categoriesAdapter.updateData(state.categories)
                 }
             }
         }
+    }
+
+    private fun observeToastEvents() {
+        viewModel.toastEvent.observe(viewLifecycleOwner) { message ->
+            if (_binding == null) return@observe
+            message?.let {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+
+                viewModel.clearToastEvent()
+            }
+        }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -76,16 +88,13 @@ class CategoriesListFragment : Fragment() {
     }
 
     private fun openRecipesByCategoryId(categoryId: Int) {
-
         val category = viewModel.getCategoryById(categoryId)
 
         if (category != null) {
-
             val action = CategoriesListFragmentDirections
                 .actionCategoriesListFragmentToRecipesListFragment(category)
             findNavController().navigate(action)
         } else {
-
             throw IllegalArgumentException("Category with ID $categoryId not found")
         }
     }

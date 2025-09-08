@@ -12,12 +12,16 @@ import kotlinx.coroutines.launch
 data class CategoriesListState(
     val categories: List<Category> = emptyList(),
     val isLoading: Boolean = false,
-    val isError: Boolean = false
+    val isError: Boolean = false,
+    val errorMessage: String? = null
 )
 
 class CategoriesListViewModel(application: Application) : AndroidViewModel(application) {
     private val _state = MutableLiveData<CategoriesListState>()
     val state: LiveData<CategoriesListState> = _state
+
+    private val _toastEvent = MutableLiveData<String?>()
+    val toastEvent: LiveData<String?> = _toastEvent
 
     private val repository = RecipeRepository()
 
@@ -38,8 +42,16 @@ class CategoriesListViewModel(application: Application) : AndroidViewModel(appli
                 val categories = repository.getCategories()
                 _state.postValue(CategoriesListState(categories = categories))
             } catch (e: Exception) {
-                _state.postValue(CategoriesListState(isError = true))
+                _state.postValue(CategoriesListState(
+                    isError = true,
+                    errorMessage = "Ошибка получения данных"
+                ))
+                _toastEvent.postValue("Ошибка получения данных")
             }
         }
+    }
+
+    fun clearToastEvent() {
+        _toastEvent.value = null
     }
 }

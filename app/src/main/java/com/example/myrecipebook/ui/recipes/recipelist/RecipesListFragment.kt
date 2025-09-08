@@ -28,10 +28,10 @@ import com.bumptech.glide.Glide
 class RecipesListFragment : Fragment() {
 
     private var _binding: FragmentRecipesListBinding? = null
-    private val binding
-        get() = _binding ?: throw IllegalStateException(
-            "Binding for FragmentRecipesListBinding must not be null."
-        )
+    private val binding: FragmentRecipesListBinding
+        get() = checkNotNull(_binding) {
+            "Binding is null. Fragment may have been destroyed or not initialized properly."
+        }
 
     private val viewModel: RecipesListViewModel by viewModels()
     private lateinit var adapter: RecipesListAdapter
@@ -63,20 +63,20 @@ class RecipesListFragment : Fragment() {
 
     private fun observeState() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
+            if (_binding == null) return@observe
             state?.let {
-
-                    if (state.isError) {
-                        Toast.makeText(requireContext(), "Ошибка получения данных", Toast.LENGTH_SHORT).show()
-                    } else {
-
-                        adapter.updateData(state.recipes)
-                    }
+                if (state.isError) {
+                    Toast.makeText(requireContext(), "Ошибка получения данных", Toast.LENGTH_SHORT).show()
+                } else {
+                    adapter.updateData(state.recipes)
                 }
             }
         }
+    }
 
     private fun observeHeaderImage() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
+            if (_binding == null) return@observe
             state?.let {
                 binding.tvCategoryTitle.text = state.categoryName
 
@@ -89,7 +89,6 @@ class RecipesListFragment : Fragment() {
                         .centerCrop()
                         .into(binding.ivCategoryHeader)
                 } ?: run {
-
                     binding.ivCategoryHeader.setImageResource(R.drawable.ic_error)
                 }
             }

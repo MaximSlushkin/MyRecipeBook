@@ -20,10 +20,10 @@ import com.google.android.material.divider.MaterialDividerItemDecoration
 class RecipeFragment : Fragment() {
 
     private var _binding: FragmentRecipeBinding? = null
-    private val binding
-        get() = _binding ?: throw IllegalStateException(
-            "Binding for FragmentRecipeBinding must not be null."
-        )
+    private val binding: FragmentRecipeBinding
+        get() = checkNotNull(_binding) {
+            "Binding is null. Fragment may have been destroyed or not initialized properly."
+        }
 
     private lateinit var ingredientsAdapter: IngredientsAdapter
     private lateinit var methodAdapter: MethodAdapter
@@ -81,6 +81,7 @@ class RecipeFragment : Fragment() {
 
     private fun setupObservers() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
+            if (_binding == null) return@observe
             state?.let {
                 if (state.isError) {
                     Toast.makeText(requireContext(), "Ошибка получения данных", Toast.LENGTH_SHORT).show()
