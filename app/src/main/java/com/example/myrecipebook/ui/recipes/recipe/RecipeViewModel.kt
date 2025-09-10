@@ -28,7 +28,7 @@ class RecipeViewModel(
     )
 
     private val sharedPref = application.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-    private val repository = RecipeRepository()
+    private val repository = RecipeRepository(application)
 
     private val _state = MutableLiveData<RecipeState>()
 
