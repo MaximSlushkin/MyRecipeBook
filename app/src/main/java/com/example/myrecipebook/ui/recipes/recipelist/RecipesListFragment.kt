@@ -59,17 +59,32 @@ class RecipesListFragment : Fragment() {
         initRecycler()
         observeState()
         observeHeaderImage()
+        observeToastEvents()
     }
 
     private fun observeState() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
             if (_binding == null) return@observe
             state?.let {
-                if (state.isError) {
-                    Toast.makeText(requireContext(), "Ошибка получения данных", Toast.LENGTH_SHORT).show()
-                } else {
-                    adapter.updateData(state.recipes)
+                // Всегда обновляем адаптер, даже если есть ошибка
+                // (могут быть показаны кешированные данные с сообщением об ошибке)
+                adapter.updateData(state.recipes)
+
+                // Обрабатываем ошибки
+                if (state.isError && state.recipes.isEmpty()) {
+                    // Только если нет данных вообще, показываем ошибку
+                    Toast.makeText(requireContext(), state.errorMessage ?: "Ошибка получения данных", Toast.LENGTH_SHORT).show()
                 }
+            }
+        }
+    }
+
+    private fun observeToastEvents() {
+        viewModel.toastEvent.observe(viewLifecycleOwner) { message ->
+            if (_binding == null) return@observe
+            message?.let {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                viewModel.clearToastEvent()
             }
         }
     }
