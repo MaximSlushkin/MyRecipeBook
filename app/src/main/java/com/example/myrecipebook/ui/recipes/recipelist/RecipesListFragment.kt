@@ -12,10 +12,6 @@ import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.myrecipebook.ARG_CATEGORY_ID
-import com.example.myrecipebook.ARG_CATEGORY_IMAGE_URL
-import com.example.myrecipebook.ARG_CATEGORY_NAME
-import com.example.myrecipebook.ARG_RECIPE_ID
 import com.example.myrecipebook.R
 import com.example.myrecipebook.databinding.FragmentRecipesListBinding
 import com.example.myrecipebook.model.Recipe
@@ -66,14 +62,14 @@ class RecipesListFragment : Fragment() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
             if (_binding == null) return@observe
             state?.let {
-                // Всегда обновляем адаптер, даже если есть ошибка
-                // (могут быть показаны кешированные данные с сообщением об ошибке)
                 adapter.updateData(state.recipes)
 
-                // Обрабатываем ошибки
                 if (state.isError && state.recipes.isEmpty()) {
-                    // Только если нет данных вообще, показываем ошибку
-                    Toast.makeText(requireContext(), state.errorMessage ?: "Ошибка получения данных", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        state.errorMessage ?: "Ошибка получения данных",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -127,7 +123,8 @@ class RecipesListFragment : Fragment() {
     private fun openRecipeByRecipeId(recipeId: Int) {
         Log.d("RecipesFragment", "Opening recipe ID: $recipeId")
 
-        val action = RecipesListFragmentDirections.actionRecipesListFragmentToRecipeFragment(recipeId)
+        val action =
+            RecipesListFragmentDirections.actionRecipesListFragmentToRecipeFragment(recipeId)
         findNavController().navigate(action)
     }
 

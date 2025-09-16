@@ -13,9 +13,6 @@ import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.myrecipebook.ARG_RECIPE_ID
-import com.example.myrecipebook.FAVORITES_KEY
-import com.example.myrecipebook.PREFS_NAME
 import com.example.myrecipebook.R
 import com.example.myrecipebook.databinding.FragmentFavoritesBinding
 import com.example.myrecipebook.ui.recipes.recipe.RecipeFragment
@@ -58,7 +55,8 @@ class FavoritesFragment : Fragment() {
             if (_binding == null) return@observe
             state?.let {
                 if (state.isError) {
-                    Toast.makeText(requireContext(), "Ошибка получения данных", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Ошибка получения данных", Toast.LENGTH_SHORT)
+                        .show()
                 } else {
                     adapter.updateData(state.recipes)
 
