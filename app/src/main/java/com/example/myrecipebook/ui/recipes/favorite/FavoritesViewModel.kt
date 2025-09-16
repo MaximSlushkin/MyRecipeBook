@@ -31,13 +31,12 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
 
         viewModelScope.launch {
             try {
-
                 val favoriteRecipes = repository.getFavoriteRecipesFromCacheOnce()
-                _state.postValue(FavoritesState(recipes = favoriteRecipes, isLoading = false))
+                val sortedFavoriteRecipes = favoriteRecipes.sortedBy { it.title }
+                _state.postValue(FavoritesState(recipes = sortedFavoriteRecipes, isLoading = false))
             } catch (e: Exception) {
                 _state.postValue(FavoritesState(isLoading = false, isError = true))
             }
         }
     }
-
 }

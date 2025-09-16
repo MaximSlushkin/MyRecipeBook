@@ -103,9 +103,10 @@ class RecipeRepository(context: Context) {
                     val categories = response.body() ?: emptyList()
                     Log.d(TAG, "Successfully loaded ${categories.size} categories")
 
-                    categoriesDao.insertCategories(categories)
+                    val sortedCategories = categories.sortedBy { it.title }
+                    categoriesDao.insertCategories(sortedCategories)
 
-                    categories
+                    sortedCategories
                 } else {
                     Log.e(
                         TAG,
@@ -155,9 +156,11 @@ class RecipeRepository(context: Context) {
                     )
 
                     val recipesWithCategory = recipes.map { it.copy(categoryId = categoryId) }
-                    recipesDao.insertRecipes(recipesWithCategory)
 
-                    recipesWithCategory
+                    val sortedRecipes = recipesWithCategory.sortedBy { it.title }
+                    recipesDao.insertRecipes(sortedRecipes)
+
+                    sortedRecipes
                 } else {
                     Log.e(
                         TAG,
