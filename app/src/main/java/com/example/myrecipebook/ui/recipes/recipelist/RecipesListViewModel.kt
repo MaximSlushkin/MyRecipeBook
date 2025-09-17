@@ -59,7 +59,6 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
 
         viewModelScope.launch {
             try {
-
                 val cachedRecipes = if (categoryId != null) {
                     repository.getRecipesFromCacheOnce(categoryId)
                 } else {
@@ -67,8 +66,9 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
                 }
 
                 if (cachedRecipes.isNotEmpty()) {
+                    val sortedCachedRecipes = cachedRecipes.sortedBy { it.title }
                     _state.value = RecipesListState(
-                        recipes = cachedRecipes,
+                        recipes = sortedCachedRecipes,
                         categoryName = categoryName ?: "",
                         categoryImageUrl = categoryImageUrl,
                         isLoading = true
@@ -82,15 +82,17 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
                 }
 
                 if (networkRecipes.isNotEmpty()) {
+                    val sortedNetworkRecipes = networkRecipes.sortedBy { it.title }
                     _state.value = RecipesListState(
-                        recipes = networkRecipes,
+                        recipes = sortedNetworkRecipes,
                         categoryName = categoryName ?: "",
                         categoryImageUrl = categoryImageUrl,
                         isLoading = false
                     )
                 } else if (cachedRecipes.isNotEmpty()) {
+                    val sortedCachedRecipes = cachedRecipes.sortedBy { it.title }
                     _state.value = RecipesListState(
-                        recipes = cachedRecipes,
+                        recipes = sortedCachedRecipes,
                         categoryName = categoryName ?: "",
                         categoryImageUrl = categoryImageUrl,
                         isLoading = false,
@@ -118,8 +120,9 @@ class RecipesListViewModel(application: Application) : AndroidViewModel(applicat
                     }
 
                     if (cachedRecipes.isNotEmpty()) {
+                        val sortedCachedRecipes = cachedRecipes.sortedBy { it.title }
                         _state.value = RecipesListState(
-                            recipes = cachedRecipes,
+                            recipes = sortedCachedRecipes,
                             categoryName = categoryName ?: "",
                             categoryImageUrl = categoryImageUrl,
                             isLoading = false,

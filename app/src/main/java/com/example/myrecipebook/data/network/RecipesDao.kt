@@ -30,4 +30,16 @@ interface RecipesDao {
 
     @Query("SELECT COUNT(*) FROM recipes WHERE categoryId = :categoryId")
     suspend fun getRecipesCountByCategory(categoryId: Int): Int
+
+    @Query("SELECT * FROM recipes WHERE isFavorite = 1 ORDER BY title ASC")
+    fun getFavoriteRecipes(): Flow<List<Recipe>>
+
+    @Query("SELECT * FROM recipes WHERE isFavorite = 1 ORDER BY title ASC")
+    suspend fun getFavoriteRecipesOnce(): List<Recipe>
+
+    @Query("UPDATE recipes SET isFavorite = :isFavorite WHERE id = :recipeId")
+    suspend fun updateFavoriteStatus(recipeId: Int, isFavorite: Boolean)
+
+    @Query("SELECT COUNT(*) FROM recipes WHERE isFavorite = 1")
+    suspend fun getFavoritesCount(): Int
 }

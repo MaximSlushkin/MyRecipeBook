@@ -10,9 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.fragment.app.viewModels
-import com.example.myrecipebook.ARG_CATEGORY_ID
-import com.example.myrecipebook.ARG_CATEGORY_IMAGE_URL
-import com.example.myrecipebook.ARG_CATEGORY_NAME
 import com.example.myrecipebook.R
 import com.example.myrecipebook.ui.recipes.recipelist.RecipesListFragment
 import com.example.myrecipebook.databinding.FragmentListCategoriesBinding

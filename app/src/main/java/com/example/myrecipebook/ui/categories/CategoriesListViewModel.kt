@@ -13,7 +13,7 @@ data class CategoriesListState(
     val categories: List<Category> = emptyList(),
     val isLoading: Boolean = false,
     val isError: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
 )
 
 class CategoriesListViewModel(application: Application) : AndroidViewModel(application) {
@@ -43,9 +43,10 @@ class CategoriesListViewModel(application: Application) : AndroidViewModel(appli
                 val cachedCategories = repository.getCategoriesFromCacheOnce()
                 if (cachedCategories.isNotEmpty()) {
 
+                    val sortedCachedCategories = cachedCategories.sortedBy { it.title }
                     _state.postValue(
                         CategoriesListState(
-                            categories = cachedCategories,
+                            categories = sortedCachedCategories,
                             isLoading = true
                         )
                     )
@@ -54,12 +55,14 @@ class CategoriesListViewModel(application: Application) : AndroidViewModel(appli
                 val networkCategories = repository.getCategories()
 
                 if (networkCategories.isNotEmpty()) {
-                    _state.postValue(CategoriesListState(categories = networkCategories))
+
+                    val sortedNetworkCategories = networkCategories.sortedBy { it.title }
+                    _state.postValue(CategoriesListState(categories = sortedNetworkCategories))
                 } else if (cachedCategories.isNotEmpty()) {
 
-                    _state.postValue(CategoriesListState(categories = cachedCategories))
+                    val sortedCachedCategories = cachedCategories.sortedBy { it.title }
+                    _state.postValue(CategoriesListState(categories = sortedCachedCategories))
                 } else {
-
                     _state.postValue(
                         CategoriesListState(
                             isError = true,
@@ -69,13 +72,14 @@ class CategoriesListViewModel(application: Application) : AndroidViewModel(appli
                 }
 
             } catch (e: Exception) {
-
                 try {
                     val cachedCategories = repository.getCategoriesFromCacheOnce()
                     if (cachedCategories.isNotEmpty()) {
+
+                        val sortedCachedCategories = cachedCategories.sortedBy { it.title }
                         _state.postValue(
                             CategoriesListState(
-                                categories = cachedCategories,
+                                categories = sortedCachedCategories,
                                 isError = true,
                                 errorMessage = "Офлайн режим: данные могут быть устаревшими"
                             )

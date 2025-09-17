@@ -8,8 +8,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.myrecipebook.FAVORITES_KEY
-import com.example.myrecipebook.PREFS_NAME
 import com.example.myrecipebook.data.repository.RecipeRepository
 import com.example.myrecipebook.model.Recipe
 import kotlinx.coroutines.launch
@@ -27,7 +25,6 @@ class RecipeViewModel(
         val recipeImageUrl: String? = null,
     )
 
-    private val sharedPref = application.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     private val repository = RecipeRepository(application)
 
     private val _state = MutableLiveData<RecipeState>()
@@ -47,27 +44,18 @@ class RecipeViewModel(
         val currentState = _state.value ?: return
         val currentRecipe = currentState.recipe ?: return
 
-        val favorites = getFavorites().toMutableSet()
-        val recipeIdStr = currentRecipe.id.toString()
-
         val newFavoriteStatus = !currentState.isFavorite
-        if (newFavoriteStatus) {
-            favorites.add(recipeIdStr)
-        } else {
-            favorites.remove(recipeIdStr)
+
+        viewModelScope.launch {
+            try {
+
+                repository.updateFavoriteStatus(currentRecipe.id, newFavoriteStatus)
+
+                updateState(currentState.copy(isFavorite = newFavoriteStatus))
+            } catch (e: Exception) {
+                Log.e("RecipeViewModel", "Error updating favorite status: ${e.message}")
+            }
         }
-        saveFavorites(favorites)
-
-        updateState(currentState.copy(isFavorite = newFavoriteStatus))
-    }
-
-    private fun saveFavorites(favorites: Set<String>) {
-        sharedPref.edit().putStringSet(FAVORITES_KEY, favorites).apply()
-    }
-
-    private fun getFavorites(): MutableSet<String> {
-        val favorites = sharedPref.getStringSet(FAVORITES_KEY, null) ?: mutableSetOf()
-        return HashSet(favorites)
     }
 
     fun updatePortionCount(newPortionCount: Int) {
@@ -83,8 +71,8 @@ class RecipeViewModel(
                 val recipe = repository.getRecipeById(recipeId)
                 if (recipe != null) {
                     val imageUrl = "https://recipes.androidsprint.ru/api/images/${recipe.imageUrl}"
-                    val favorites = getFavorites()
-                    val isFavorite = favorites.contains(recipe.id.toString())
+
+                    val isFavorite = recipe.isFavorite
                     val currentPortionCount = _state.value?.portionCount ?: 1
 
                     val newState = RecipeState(
@@ -97,28 +85,9 @@ class RecipeViewModel(
 
                     _state.postValue(newState)
                 } else {
-                    val newState = _state.value?.copy(
-                        isLoading = false,
-                        isError = true,
-                        recipeImageUrl = null,
-                    ) ?: RecipeState(
-                        isLoading = false,
-                        isError = true,
-                        recipeImageUrl = null,
-                    )
-                    _state.postValue(newState)
+
                 }
             } catch (e: Exception) {
-                val newState = _state.value?.copy(
-                    isLoading = false,
-                    isError = true,
-                    recipeImageUrl = null,
-                ) ?: RecipeState(
-                    isLoading = false,
-                    isError = true,
-                    recipeImageUrl = null,
-                )
-                _state.postValue(newState)
             }
         }
     }

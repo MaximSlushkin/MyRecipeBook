@@ -38,6 +38,7 @@ class RecipeRepository(context: Context) {
             RecipeDatabase::class.java,
             "recipe-database"
         )
+            .addMigrations(RecipeDatabase.MIGRATION_3_4)
             .fallbackToDestructiveMigration(true)
             .build()
     }
@@ -102,9 +103,10 @@ class RecipeRepository(context: Context) {
                     val categories = response.body() ?: emptyList()
                     Log.d(TAG, "Successfully loaded ${categories.size} categories")
 
-                    categoriesDao.insertCategories(categories)
+                    val sortedCategories = categories.sortedBy { it.title }
+                    categoriesDao.insertCategories(sortedCategories)
 
-                    categories
+                    sortedCategories
                 } else {
                     Log.e(
                         TAG,
@@ -154,9 +156,11 @@ class RecipeRepository(context: Context) {
                     )
 
                     val recipesWithCategory = recipes.map { it.copy(categoryId = categoryId) }
-                    recipesDao.insertRecipes(recipesWithCategory)
 
-                    recipesWithCategory
+                    val sortedRecipes = recipesWithCategory.sortedBy { it.title }
+                    recipesDao.insertRecipes(sortedRecipes)
+
+                    sortedRecipes
                 } else {
                     Log.e(
                         TAG,
@@ -219,6 +223,45 @@ class RecipeRepository(context: Context) {
             } catch (e: Exception) {
                 Log.e(TAG, "Exception loading recipes by IDs: ${e.message}")
                 emptyList()
+            }
+        }
+    }
+
+    fun getFavoriteRecipesFromCache(): Flow<List<Recipe>> {
+        Log.d(TAG, "Getting favorite recipes from cache (database) - Flow")
+        return recipesDao.getFavoriteRecipes()
+    }
+
+    suspend fun getFavoriteRecipesFromCacheOnce(): List<Recipe> {
+        Log.d(TAG, "Getting favorite recipes from cache (database) - one time request")
+        return withContext(Dispatchers.IO) {
+            try {
+                recipesDao.getFavoriteRecipesOnce()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error getting favorite recipes from cache: ${e.message}")
+                emptyList()
+            }
+        }
+    }
+
+    suspend fun updateFavoriteStatus(recipeId: Int, isFavorite: Boolean) {
+        withContext(Dispatchers.IO) {
+            try {
+                recipesDao.updateFavoriteStatus(recipeId, isFavorite)
+                Log.d(TAG, "Updated favorite status for recipe $recipeId: $isFavorite")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error updating favorite status: ${e.message}")
+            }
+        }
+    }
+
+    suspend fun getFavoritesCount(): Int {
+        return withContext(Dispatchers.IO) {
+            try {
+                recipesDao.getFavoritesCount()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error getting favorites count: ${e.message}")
+                0
             }
         }
     }
