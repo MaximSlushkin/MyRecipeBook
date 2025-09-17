@@ -1,5 +1,7 @@
 package com.example.myrecipebook.di
 
-interface Factory<T> {
+import androidx.lifecycle.ViewModel
+
+interface Factory<T : ViewModel> {
     fun create(): T
 }

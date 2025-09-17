@@ -7,12 +7,16 @@ import com.example.myrecipebook.ui.recipes.recipe.RecipeViewModel
 
 class RecipeViewModelFactory(
     private val repository: RecipeRepository
-) : ViewModelProvider.Factory {
+) : ViewModelProvider.Factory, Factory<RecipeViewModel> {
+
+    override fun create(): RecipeViewModel {
+        return RecipeViewModel(repository)
+    }
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(RecipeViewModel::class.java)) {
-            return RecipeViewModel(repository) as T
+            return create() as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
