@@ -114,6 +114,12 @@ class RecipeRepository(
     suspend fun getRecipesByCategory(categoryId: Int): List<Recipe> {
         return withContext(Dispatchers.IO) {
             try {
+
+                val favoriteRecipeIds = recipesDao.getFavoriteRecipesOnce()
+                    .filter { it.categoryId == categoryId }
+                    .map { it.id }
+                    .toSet()
+
                 val response: Response<List<Recipe>> =
                     apiService.getRecipesByCategory(categoryId).execute()
                 if (response.isSuccessful) {
@@ -123,9 +129,14 @@ class RecipeRepository(
                         "Successfully loaded ${recipes.size} recipes for category $categoryId"
                     )
 
-                    val recipesWithCategory = recipes.map { it.copy(categoryId = categoryId) }
+                    val recipesWithCategoryAndFavorite = recipes.map {
+                        it.copy(
+                            categoryId = categoryId,
+                            isFavorite = it.id in favoriteRecipeIds
+                        )
+                    }
 
-                    val sortedRecipes = recipesWithCategory.sortedBy { it.title }
+                    val sortedRecipes = recipesWithCategoryAndFavorite.sortedBy { it.title }
                     recipesDao.insertRecipes(sortedRecipes)
 
                     sortedRecipes

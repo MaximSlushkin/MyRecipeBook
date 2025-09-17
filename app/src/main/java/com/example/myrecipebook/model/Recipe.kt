@@ -23,6 +23,6 @@ data class Recipe(
     val method: List<String>,
     val imageUrl: String,
     val categoryId: Int? = null,
-    @ColumnInfo(name = "isFavorite")
-    val isFavorite: Boolean,
+    @ColumnInfo(name = "isFavorite", defaultValue = "0")
+    val isFavorite: Boolean = false,
 ) : Parcelable
