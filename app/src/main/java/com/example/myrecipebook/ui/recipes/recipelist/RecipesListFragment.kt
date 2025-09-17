@@ -20,6 +20,8 @@ import java.io.IOException
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
+import com.example.myrecipebook.RecipeApplication
+import com.example.myrecipebook.di.RecipesListViewModelFactory
 
 class RecipesListFragment : Fragment() {
 
@@ -29,7 +31,10 @@ class RecipesListFragment : Fragment() {
             "Binding is null. Fragment may have been destroyed or not initialized properly."
         }
 
-    private val viewModel: RecipesListViewModel by viewModels()
+    private val viewModel: RecipesListViewModel by viewModels {
+        val appContainer = (requireActivity().application as RecipeApplication).appContainer
+        RecipesListViewModelFactory(appContainer.recipeRepository)
+    }
     private lateinit var adapter: RecipesListAdapter
 
     private val args: RecipesListFragmentArgs by navArgs()

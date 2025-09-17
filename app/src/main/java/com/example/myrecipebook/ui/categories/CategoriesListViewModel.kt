@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myrecipebook.data.repository.RecipeRepository
 import com.example.myrecipebook.model.Category
@@ -16,14 +17,14 @@ data class CategoriesListState(
     val errorMessage: String? = null,
 )
 
-class CategoriesListViewModel(application: Application) : AndroidViewModel(application) {
+class CategoriesListViewModel(
+    private val repository: RecipeRepository
+) : ViewModel() {
     private val _state = MutableLiveData<CategoriesListState>()
     val state: LiveData<CategoriesListState> = _state
 
     private val _toastEvent = MutableLiveData<String?>()
     val toastEvent: LiveData<String?> = _toastEvent
-
-    private val repository = RecipeRepository(application)
 
     fun getCategoryById(categoryId: Int): Category? {
         val currentCategories = _state.value?.categories ?: emptyList()

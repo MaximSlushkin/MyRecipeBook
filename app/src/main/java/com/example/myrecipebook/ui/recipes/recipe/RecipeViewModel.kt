@@ -7,25 +7,25 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myrecipebook.data.repository.RecipeRepository
 import com.example.myrecipebook.model.Recipe
 import kotlinx.coroutines.launch
 import java.io.IOException
 
-class RecipeViewModel(
-    application: Application,
-) : AndroidViewModel(application) {
-    data class RecipeState(
-        val recipe: Recipe? = null,
-        val portionCount: Int = 1,
-        val isFavorite: Boolean = false,
-        val isLoading: Boolean = false,
-        val isError: Boolean = false,
-        val recipeImageUrl: String? = null,
-    )
+data class RecipeState(
+    val recipe: Recipe? = null,
+    val portionCount: Int = 1,
+    val isFavorite: Boolean = false,
+    val isLoading: Boolean = false,
+    val isError: Boolean = false,
+    val recipeImageUrl: String? = null,
+)
 
-    private val repository = RecipeRepository(application)
+class RecipeViewModel(
+    private val repository: RecipeRepository
+) : ViewModel() {
 
     private val _state = MutableLiveData<RecipeState>()
 

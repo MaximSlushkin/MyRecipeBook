@@ -14,11 +14,29 @@ import com.example.myrecipebook.R
 import com.example.myrecipebook.ui.recipes.recipelist.RecipesListFragment
 import com.example.myrecipebook.databinding.FragmentListCategoriesBinding
 import androidx.navigation.fragment.findNavController
+import androidx.room.Room
+import com.example.myrecipebook.RecipeApplication
+import com.example.myrecipebook.data.network.RecipeApiService
+import com.example.myrecipebook.data.network.RecipeDatabase
+import com.example.myrecipebook.di.CategoriesListViewModelFactory
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import java.util.concurrent.TimeUnit
 
 class CategoriesListFragment : Fragment() {
 
     private lateinit var categoriesAdapter: CategoriesListAdapter
-    private val viewModel: CategoriesListViewModel by viewModels()
+    private val viewModel: CategoriesListViewModel by viewModels {
+        val appContainer = (requireActivity().application as RecipeApplication).appContainer
+        CategoriesListViewModelFactory(appContainer.recipeRepository)
+    }
 
     private var _binding: FragmentListCategoriesBinding? = null
     private val binding: FragmentListCategoriesBinding

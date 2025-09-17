@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myrecipebook.data.repository.RecipeRepository
 import com.example.myrecipebook.model.Recipe
@@ -16,11 +17,11 @@ data class FavoritesState(
     val isError: Boolean = false
 )
 
-class FavoritesViewModel(application: Application) : AndroidViewModel(application) {
+class FavoritesViewModel(
+    private val repository: RecipeRepository
+) : ViewModel() {
     private val _state = MutableLiveData<FavoritesState>()
     val state: LiveData<FavoritesState> = _state
-
-    private val repository = RecipeRepository(application)
 
     init {
         loadFavorites()

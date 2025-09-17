@@ -22,7 +22,11 @@ import retrofit2.Retrofit
 import retrofit2.Response
 import java.util.concurrent.TimeUnit
 
-class RecipeRepository(context: Context) {
+class RecipeRepository(
+    context: Context,
+    private val database: RecipeDatabase,
+    private val apiService: RecipeApiService
+) {
 
     private val URL = "https://recipes.androidsprint.ru/api/"
     private val TAG = "RecipeRepository"
@@ -32,48 +36,12 @@ class RecipeRepository(context: Context) {
         isLenient = true
     }
 
-    private val database: RecipeDatabase by lazy {
-        Room.databaseBuilder(
-            context.applicationContext,
-            RecipeDatabase::class.java,
-            "recipe-database"
-        )
-            .addMigrations(RecipeDatabase.MIGRATION_3_4)
-            .fallbackToDestructiveMigration(true)
-            .build()
-    }
-
     private val categoriesDao by lazy {
         database.categoriesDao()
     }
 
     private val recipesDao by lazy {
         database.recipesDao()
-    }
-
-    private val okHttpClient: OkHttpClient by lazy {
-        val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        }
-
-        OkHttpClient.Builder()
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
-            .addInterceptor(loggingInterceptor)
-            .build()
-    }
-
-    private val retrofit: Retrofit by lazy {
-        Retrofit.Builder()
-            .baseUrl(URL)
-            .client(okHttpClient)
-            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
-            .build()
-    }
-
-    private val apiService: RecipeApiService by lazy {
-        retrofit.create(RecipeApiService::class.java)
     }
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO + Job())
