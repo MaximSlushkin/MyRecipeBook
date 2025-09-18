@@ -15,9 +15,9 @@ class CategoriesListViewModelFactory(
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(CategoriesListViewModel::class.java)) {
-            return create() as T
+        if (!modelClass.isAssignableFrom(CategoriesListViewModel::class.java)) {
+            throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
-        throw IllegalArgumentException("Unknown ViewModel class")
+        return create() as T
     }
 }

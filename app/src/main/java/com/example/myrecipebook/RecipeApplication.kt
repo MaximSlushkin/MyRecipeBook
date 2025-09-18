@@ -4,5 +4,11 @@ import android.app.Application
 import com.example.myrecipebook.di.AppContainer
 
 class RecipeApplication : Application() {
-    val appContainer by lazy { AppContainer(this) }
+    lateinit var appContainer: AppContainer
+        private set
+
+    override fun onCreate() {
+        super.onCreate()
+        appContainer = AppContainer(this)
+    }
 }
