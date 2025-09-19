@@ -18,8 +18,8 @@ import androidx.room.Room
 import com.example.myrecipebook.RecipeApplication
 import com.example.myrecipebook.data.network.RecipeApiService
 import com.example.myrecipebook.data.network.RecipeDatabase
-import com.example.myrecipebook.di.CategoriesListViewModelFactory
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -30,13 +30,11 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
 
-class CategoriesListFragment : Fragment() {
+@AndroidEntryPoint
+class CategoriesListFragment : Fragment(R.layout.fragment_list_categories) {
 
     private lateinit var categoriesAdapter: CategoriesListAdapter
-    private val viewModel: CategoriesListViewModel by viewModels {
-        val appContainer = (requireActivity().application as RecipeApplication).appContainer
-        CategoriesListViewModelFactory(appContainer.recipeRepository)
-    }
+    private val viewModel: CategoriesListViewModel by viewModels()
 
     private var _binding: FragmentListCategoriesBinding? = null
     private val binding: FragmentListCategoriesBinding

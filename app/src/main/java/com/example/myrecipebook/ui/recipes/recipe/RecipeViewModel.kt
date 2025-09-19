@@ -11,8 +11,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myrecipebook.data.repository.RecipeRepository
 import com.example.myrecipebook.model.Recipe
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.io.IOException
+import javax.inject.Inject
 
 data class RecipeState(
     val recipe: Recipe? = null,
@@ -23,7 +25,8 @@ data class RecipeState(
     val recipeImageUrl: String? = null,
 )
 
-class RecipeViewModel(
+@HiltViewModel
+class RecipeViewModel @Inject constructor(
     private val repository: RecipeRepository
 ) : ViewModel() {
 

@@ -9,7 +9,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myrecipebook.data.repository.RecipeRepository
 import com.example.myrecipebook.model.Recipe
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class RecipesListState(
     val recipes: List<Recipe> = emptyList(),
@@ -20,7 +22,8 @@ data class RecipesListState(
     val errorMessage: String? = null
 )
 
-class RecipesListViewModel(
+@HiltViewModel
+class RecipesListViewModel @Inject constructor(
     private val repository: RecipeRepository
 ) : ViewModel() {
     private val _state = MutableLiveData<RecipesListState>()

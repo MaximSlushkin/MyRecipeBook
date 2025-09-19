@@ -21,9 +21,10 @@ import java.io.IOException
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.myrecipebook.RecipeApplication
-import com.example.myrecipebook.di.FavoritesViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 
-class FavoritesFragment : Fragment() {
+@AndroidEntryPoint
+class FavoritesFragment : Fragment(R.layout.fragment_favorites) {
 
     private var _binding: FragmentFavoritesBinding? = null
     private val binding: FragmentFavoritesBinding
@@ -31,10 +32,7 @@ class FavoritesFragment : Fragment() {
             "Binding is null. Fragment may have been destroyed or not initialized properly."
         }
 
-    private val viewModel: FavoritesViewModel by viewModels {
-        val appContainer = (requireActivity().application as RecipeApplication).appContainer
-        FavoritesViewModelFactory(appContainer.recipeRepository)
-    }
+    private val viewModel: FavoritesViewModel by viewModels()
     private lateinit var adapter: RecipesListAdapter
 
     override fun onCreateView(
