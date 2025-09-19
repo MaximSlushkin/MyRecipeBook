@@ -9,7 +9,9 @@ import androidx.core.view.updatePadding
 import androidx.navigation.findNavController
 import com.example.myrecipebook.R
 import com.example.myrecipebook.databinding.ActivityMainBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private var _binding: ActivityMainBinding? = null

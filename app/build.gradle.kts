@@ -5,7 +5,8 @@ plugins {
     // Kotlin serialization plugin for type safe routes and navigation arguments
     kotlin("plugin.serialization")
     id("androidx.navigation.safeargs.kotlin")
-    id("com.google.devtools.ksp") version "2.2.10-2.0.2"
+    id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -55,6 +56,10 @@ android {
 }
 
 dependencies {
+    val hiltVersion = "2.57.1"
+    implementation("com.google.dagger:hilt-android:$hiltVersion")
+    ksp("com.google.dagger:hilt-android-compiler:$hiltVersion")
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
