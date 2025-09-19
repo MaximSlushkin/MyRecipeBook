@@ -1,6 +1,7 @@
 package com.example.myrecipebook.model
 
 import android.os.Parcelable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
@@ -22,5 +23,6 @@ data class Recipe(
     val method: List<String>,
     val imageUrl: String,
     val categoryId: Int? = null,
-    val isFavorite: Boolean,
+    @ColumnInfo(name = "isFavorite", defaultValue = "0")
+    val isFavorite: Boolean = false,
 ) : Parcelable

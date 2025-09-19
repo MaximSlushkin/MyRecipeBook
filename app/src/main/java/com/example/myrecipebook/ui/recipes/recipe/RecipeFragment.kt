@@ -12,9 +12,12 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.myrecipebook.R
+import com.example.myrecipebook.RecipeApplication
 import com.example.myrecipebook.databinding.FragmentRecipeBinding
+import com.example.myrecipebook.di.RecipeViewModelFactory
 import com.example.myrecipebook.model.Recipe
 import com.google.android.material.divider.MaterialDividerItemDecoration
+import com.example.myrecipebook.ui.recipes.recipe.RecipeState
 
 @Suppress("DEPRECATION")
 class RecipeFragment : Fragment() {
@@ -27,7 +30,10 @@ class RecipeFragment : Fragment() {
 
     private lateinit var ingredientsAdapter: IngredientsAdapter
     private lateinit var methodAdapter: MethodAdapter
-    private val viewModel: RecipeViewModel by viewModels()
+    private val viewModel: RecipeViewModel by viewModels {
+        val appContainer = (requireActivity().application as RecipeApplication).appContainer
+        RecipeViewModelFactory(appContainer.recipeRepository)
+    }
 
     private val args: RecipeFragmentArgs by navArgs()
 
@@ -96,7 +102,7 @@ class RecipeFragment : Fragment() {
         }
     }
 
-    private fun updateRecipeUI(recipe: Recipe, state: RecipeViewModel.RecipeState) {
+    private fun updateRecipeUI(recipe: Recipe, state: RecipeState) {
         binding.tvRecipeName.text = recipe.title
 
         state.recipeImageUrl?.let { imageUrl ->
