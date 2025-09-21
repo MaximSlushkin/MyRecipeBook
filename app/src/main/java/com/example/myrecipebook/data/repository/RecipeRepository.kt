@@ -2,7 +2,6 @@ package com.example.myrecipebook.data.repository
 
 import android.content.Context
 import android.util.Log
-import androidx.room.Room
 import com.example.myrecipebook.data.network.RecipeApiService
 import com.example.myrecipebook.data.network.RecipeDatabase
 import com.example.myrecipebook.model.Category
@@ -19,7 +18,6 @@ import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
 import retrofit2.Response
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
