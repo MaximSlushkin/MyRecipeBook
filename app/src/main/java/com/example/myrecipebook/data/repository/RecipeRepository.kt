@@ -8,6 +8,7 @@ import com.example.myrecipebook.data.network.RecipeDatabase
 import com.example.myrecipebook.model.Category
 import com.example.myrecipebook.model.Recipe
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -21,9 +22,12 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.Response
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class RecipeRepository(
-    context: Context,
+@Singleton
+class RecipeRepository @Inject constructor(
+    @ApplicationContext context: Context,
     private val database: RecipeDatabase,
     private val apiService: RecipeApiService
 ) {
